@@ -16,7 +16,7 @@
     "emulator",
     "z80"
   ],
-  "author": "jffjs",
+  "author": "Jeff Smith",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jffjs/gameboy-js/issues"
