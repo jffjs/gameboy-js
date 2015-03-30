@@ -1,0 +1,35 @@
+{
+  "name": "gameboy-js",
+  "version": "0.0.1",
+  "description": "A Gameboy emulator",
+  "main": "index.js",
+  "scripts": {
+    "karma": "./node_modules/karma/bin/karma start",
+    "test": "./node_modules/.bin/jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jffjs/gameboy-js.git"
+  },
+  "keywords": [
+    "gameboy",
+    "emulator",
+    "z80"
+  ],
+  "author": "jffjs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jffjs/gameboy-js/issues"
+  },
+  "homepage": "https://github.com/jffjs/gameboy-js",
+  "devDependencies": {
+    "beefy": "^2.1.3",
+    "jasmine": "^2.2.1",
+    "jasmine-core": "^2.2.0",
+    "karma": "^0.12.31",
+    "karma-browserify": "^4.0.0",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-jasmine": "^0.3.5",
+    "watchify": "^2.6.2"
+  }
+}
