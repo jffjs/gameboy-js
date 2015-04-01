@@ -5,23 +5,45 @@
     NOP
 
 No operation
-M: 1, T: 4
+
+T: 4
 
 ## 01h
 
     LD BC, nn
 
 Load 16-bit immediate into BC.
-M: 1, T: 4
+
+T: 4
 
 ## 02h
 
     LD (BC), A
 
 Save A to address pointed to by BC.
-M: 2, T: 7
+
+T: 8
 
 ## 03h
 
     INC BC
 
+Increments BC.
+
+T: 8
+
+## 04h
+
+    INC B
+
+Increments B.
+
+T: 4
+
+## 05h
+
+    DEC B
+
+Decrements B.
+
+T: 4
