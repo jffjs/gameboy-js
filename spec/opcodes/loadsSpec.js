@@ -249,4 +249,178 @@ describe("Load opcodes", function() {
       expect(cpu.register.T).toEqual(16);
     });
   });
+
+  describe("LDH A,(C)", function() {
+    it("loads value at address $FF00 + C into A", function() {
+      spyOn(mmu, 'read8').and.returnValue(0x34);
+      cpu.register.C = 0x08;
+      ops[0xF2]();
+      expect(mmu.read8).toHaveBeenCalledWith(0xFF08);
+      expect(cpu.register.A).toEqual(0x34);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+  });
+
+  describe("LDH (C),A", function() {
+    it("loads A into address $FF00 + C", function() {
+      spyOn(mmu, 'write8');
+      cpu.register.A = 0x44;
+      cpu.register.C = 0x08;
+      ops[0xE2]();
+      expect(mmu.write8).toHaveBeenCalledWith(0xFF08, 0x44);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+  });
+
+  describe("LDD A,(HL)", function() {
+    it("loads value at address HL into A and decrements HL", function() {
+      spyOn(mmu, 'read8').and.returnValue(0x78);
+      cpu.register.H = 0x72;
+      cpu.register.L = 0xB6;
+      ops[0x3A]();
+      expect(mmu.read8).toHaveBeenCalledWith(0x72B6);
+      expect(cpu.register.A).toEqual(0x78);
+      expect(cpu.register.H).toEqual(0x72);
+      expect(cpu.register.L).toEqual(0xB5);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+  });
+
+  describe("LDD (HL),A", function() {
+    it("loads A into address HL and decrements HL", function() {
+      spyOn(mmu, 'write8');
+      cpu.register.A = 0x10;
+      cpu.register.H = 0x72;
+      cpu.register.L = 0xB6;
+      ops[0x32]();
+      expect(mmu.write8).toHaveBeenCalledWith(0x72B6, 0x10);
+      expect(cpu.register.H).toEqual(0x72);
+      expect(cpu.register.L).toEqual(0xB5);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+  });
+
+  describe("LDI A,(HL)", function() {
+    it("loads value at address HL into A and increments HL", function() {
+      spyOn(mmu, 'read8').and.returnValue(0x78);
+      cpu.register.H = 0x72;
+      cpu.register.L = 0xB6;
+      ops[0x2A]();
+      expect(mmu.read8).toHaveBeenCalledWith(0x72B6);
+      expect(cpu.register.A).toEqual(0x78);
+      expect(cpu.register.H).toEqual(0x72);
+      expect(cpu.register.L).toEqual(0xB7);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+  });
+
+  describe("LDI (HL),A", function() {
+    it("loads A into address HL and increments HL", function() {
+      spyOn(mmu, 'write8');
+      cpu.register.A = 0x10;
+      cpu.register.H = 0x72;
+      cpu.register.L = 0xB6;
+      ops[0x22]();
+      expect(mmu.write8).toHaveBeenCalledWith(0x72B6, 0x10);
+      expect(cpu.register.H).toEqual(0x72);
+      expect(cpu.register.L).toEqual(0xB7);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+  });
+
+  describe("LDH (n),A", function() {
+    it("loads A into address $FF00 + 8-bit immediate value n", function() {
+      spyOn(mmu, 'write8');
+      spyOn(mmu, 'read8').and.returnValue(0x06);
+      cpu.register.A = 0xC7;
+      ops[0xE0]();
+      expect(mmu.read8).toHaveBeenCalledWith(0x201);
+      expect(cpu.pc).toEqual(0x201);
+      expect(mmu.write8).toHaveBeenCalledWith(0xFF06, 0xC7);
+      expect(cpu.register.M).toEqual(3);
+      expect(cpu.register.T).toEqual(12);
+    });
+  });
+
+  describe("LDH A,(n)", function() {
+    it("loads value from address $FF00 + 8-bit immediate value n into A", function() {
+      spyOn(mmu, 'read8').and.returnValue(0x06);
+      cpu.register.A = 0xC7;
+      ops[0xF0]();
+      expect(mmu.read8.calls.argsFor(0)).toEqual([0x201]);
+      expect(cpu.pc).toEqual(0x201);
+      expect(mmu.read8.calls.argsFor(1)).toEqual([0xFF06]);
+      expect(cpu.register.A).toEqual(0x06);
+      expect(cpu.register.M).toEqual(3);
+      expect(cpu.register.T).toEqual(12);
+    });
+  });
+
+  describe("LD BC,nn", function() {
+    it("loads 16-bit immediate value into BC", function() {
+      spyOn(mmu, 'read16').and.returnValue(0x1234);
+      ops[0x01]();
+      expect(mmu.read16).toHaveBeenCalledWith(0x202);
+      expect(cpu.pc).toEqual(0x202);
+      expect(cpu.register.B).toEqual(0x12);
+      expect(cpu.register.C).toEqual(0x34);
+      expect(cpu.register.M).toEqual(3);
+      expect(cpu.register.T).toEqual(12);
+    });
+  });
+
+  describe("LD DE,nn", function() {
+    it("loads 16-bit immediate value into DE", function() {
+      spyOn(mmu, 'read16').and.returnValue(0x1234);
+      ops[0x11]();
+      expect(mmu.read16).toHaveBeenCalledWith(0x202);
+      expect(cpu.pc).toEqual(0x202);
+      expect(cpu.register.D).toEqual(0x12);
+      expect(cpu.register.E).toEqual(0x34);
+      expect(cpu.register.M).toEqual(3);
+      expect(cpu.register.T).toEqual(12);
+    });
+  });
+
+  describe("LD HL,nn", function() {
+    it("loads 16-bit immediate value into HL", function() {
+      spyOn(mmu, 'read16').and.returnValue(0x1234);
+      ops[0x21]();
+      expect(mmu.read16).toHaveBeenCalledWith(0x202);
+      expect(cpu.pc).toEqual(0x202);
+      expect(cpu.register.H).toEqual(0x12);
+      expect(cpu.register.L).toEqual(0x34);
+      expect(cpu.register.M).toEqual(3);
+      expect(cpu.register.T).toEqual(12);
+    });
+  });
+
+  describe("LD SP,nn", function() {
+    it("loads 16-bit immediate value into stack pointer", function() {
+      spyOn(mmu, 'read16').and.returnValue(0x1234);
+      ops[0x31]();
+      expect(mmu.read16).toHaveBeenCalledWith(0x202);
+      expect(cpu.pc).toEqual(0x202);
+      expect(cpu.sp).toEqual(0x1234);
+      expect(cpu.register.M).toEqual(3);
+      expect(cpu.register.T).toEqual(12);
+    });
+  });
+
+  describe("LD SP,HL", function() {
+    it("puts HL into stack pointer", function() {
+      cpu.register.H = 0x32;
+      cpu.register.L = 0x0B;
+      ops[0xF9]();
+      expect(cpu.sp).toEqual(0x320B);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+  });
 });
