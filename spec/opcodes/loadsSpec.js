@@ -423,4 +423,71 @@ describe("Load opcodes", function() {
       expect(cpu.register.T).toEqual(8);
     });
   });
+
+  describe("LDHL SP, n", function() {
+    it("puts SP + 8-bit immediate signed value into HL", function() {
+      spyOn(mmu, 'read8').and.returnValue(0x0A);
+      cpu.sp = 0xAB90;
+      ops[0xF8]();
+      expect(mmu.read8).toHaveBeenCalledWith(0x201);
+      expect(cpu.pc).toEqual(0x201);
+      expect(cpu.register.H).toEqual(0xAB);
+      expect(cpu.register.L).toEqual(0x9A);
+      expect(cpu.register.M).toEqual(3);
+      expect(cpu.register.T).toEqual(12);
+    });
+
+    it("puts SP + 8-bit immediate signed value into HL (negative n)", function() {
+      spyOn(mmu, 'read8').and.returnValue(0xFE);
+      cpu.sp = 0xAB90;
+      ops[0xF8]();
+      expect(mmu.read8).toHaveBeenCalledWith(0x201);
+      expect(cpu.pc).toEqual(0x201);
+      expect(cpu.register.H).toEqual(0xAB);
+      expect(cpu.register.L).toEqual(0x8E);
+      expect(cpu.register.M).toEqual(3);
+      expect(cpu.register.T).toEqual(12);
+      expect(cpu.register.F).toEqual(0x20);
+    });
+
+    it("resets Z and N flags", function() {
+      spyOn(mmu, 'read8').and.returnValue(0x0A);
+      cpu.sp = 0xAB90;
+      cpu.register.F = 0xC0;
+      ops[0xF8]();
+      expect(cpu.register.F).toEqual(0x00);
+    });
+
+    it("sets C flag when overflowing 0xFFFF", function() {
+      spyOn(mmu, 'read8').and.returnValue(0x7F);
+      cpu.sp = 0xFFF0;
+      ops[0xF8]();
+      expect(cpu.register.H).toEqual(0x00);
+      expect(cpu.register.L).toEqual(0x6F);
+      expect(cpu.register.F).toEqual(0x10);
+    });
+
+    it("sets H flag when last 4-bits overflow 0xF", function() {
+      spyOn(mmu, 'read8').and.returnValue(0x7F);
+      cpu.sp = 0x2FF1;
+      ops[0xF8]();
+      expect(cpu.register.F).toEqual(0x20);
+    });
+
+    it("sets C flag when overflow 0x0000", function() {
+      spyOn(mmu, 'read8').and.returnValue(0xF0);
+      cpu.sp = 0x0001;
+      ops[0xF8]();
+      expect(cpu.register.H).toEqual(0xFF);
+      expect(cpu.register.L).toEqual(0xF1);
+      expect(cpu.register.F).toEqual(0x10);
+    });
+
+    it("sets H flag when last 4-bits overflow 0x0", function() {
+      spyOn(mmu, 'read8').and.returnValue(0xFD);
+      cpu.sp = 0x0011;
+      ops[0xF8]();
+      expect(cpu.register.F).toEqual(0x20);
+    });
+  });
 });
