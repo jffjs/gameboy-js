@@ -490,4 +490,68 @@ describe("Load opcodes", function() {
       expect(cpu.register.F).toEqual(0x20);
     });
   });
+
+  describe("LD (nn),SP", function() {
+    it("loads stack pointer into address at 16-bit immediate value nn", function() {
+      spyOn(mmu, 'read16').and.returnValue(0x7348);
+      spyOn(mmu, 'write16');
+      cpu.sp = 0x4321;
+      ops[0x08]();
+      expect(mmu.read16).toHaveBeenCalledWith(0x202);
+      expect(cpu.pc).toEqual(0x202);
+      expect(mmu.write16).toHaveBeenCalledWith(0x7348, 0x4321);
+      expect(cpu.register.M).toEqual(5);
+      expect(cpu.register.T).toEqual(20);
+    });
+  });
+
+  [
+    { src: 'AF', op: 0xF5 },
+    { src: 'BC', op: 0xC5 },
+    { src: 'DE', op: 0xD5 },
+    { src: 'HL', op: 0xE5 }
+  ].forEach(function(i) {
+    var spl = i.src.split(''),
+        rh = spl[0], rl = spl[1];
+
+    describe("PUSH " + i.src, function() {
+      it("Pushes " + i.src + " onto stack. Stack pointer is decremented twice.", function() {
+        spyOn(mmu, 'write8');
+        cpu.sp = 0xFFFE;
+        cpu.register[rh] = 0x5F;
+        cpu.register[rl] = 0x80;
+        ops[i.op]();
+        expect(mmu.write8.calls.argsFor(0)).toEqual([0xFFFD, 0x5F]);
+        expect(mmu.write8.calls.argsFor(1)).toEqual([0xFFFC, 0x80]);
+        expect(cpu.sp).toEqual(0xFFFC);
+        expect(cpu.register.M).toEqual(4);
+        expect(cpu.register.T).toEqual(16);
+      });
+    });
+  });
+
+  [
+    { dest: 'AF', op: 0xF1 },
+    { dest: 'BC', op: 0xC1 },
+    { dest: 'DE', op: 0xD1 },
+    { dest: 'HL', op: 0xE1 }
+  ].forEach(function(i) {
+    var spl = i.dest.split(''),
+        rh = spl[0], rl = spl[1];
+
+    describe("POP " + i.src, function() {
+      it("Pop two bytes off stack into register pair " + i.src + ". Stack pointer is incremented twice.", function() {
+        spyOn(mmu, 'read8').and.returnValue(0x23);
+        cpu.sp = 0xFFF0;
+        ops[i.op]();
+        expect(mmu.read8.calls.argsFor(0)).toEqual([0xFFF1]);
+        expect(mmu.read8.calls.argsFor(1)).toEqual([0xFFF2]);
+        expect(cpu.sp).toEqual(0xFFF2);
+        expect(cpu.register[rh]).toEqual(0x23);
+        expect(cpu.register[rl]).toEqual(0x23);
+        expect(cpu.register.M).toEqual(3);
+        expect(cpu.register.T).toEqual(12);
+      });
+    });
+  });
 });
