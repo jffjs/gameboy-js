@@ -743,4 +743,86 @@ describe("ALU opcodes", function() {
       expect(cpu.flag.C()).toEqual(1);
     });
   });
+
+  describe("AND A", function() {
+    it("logically ANDs A with A", function() {
+      cpu.register.A = 0xF2;
+      ops[0xA7]();
+      expect(cpu.register.A).toEqual(0xF2);
+      expect(cpu.register.M).toEqual(1);
+      expect(cpu.register.T).toEqual(4);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      cpu.register.A = 0x00;
+      ops[0xA7]();
+      expect(cpu.flag.Z()).toEqual(1);
+    });
+
+    it("resets N flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xA7]();
+      expect(cpu.flag.N()).toEqual(0);
+    });
+
+    it("sets H flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xA7]();
+      expect(cpu.flag.H()).toEqual(1);
+    });
+
+    it("resets C flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xA7]();
+      expect(cpu.flag.H()).toEqual(1);
+    });
+  });
+
+  [
+    { r: 'B', op: 0xA0 },
+    { r: 'C', op: 0xA1 },
+    { r: 'D', op: 0xA2 },
+    { r: 'E', op: 0xA3 },
+    { r: 'H', op: 0xA4 },
+    { r: 'L', op: 0xA5 }
+  ].forEach(function(i) {
+    describe("AND " + i.r, function() {
+      it("logically ANDs A with A", function() {
+        cpu.register.A = 0xF2;
+        cpu.register[i.r] = 0x34;
+        ops[i.op]();
+        expect(cpu.register.A).toEqual(0x30);
+        expect(cpu.register.M).toEqual(1);
+        expect(cpu.register.T).toEqual(4);
+      });
+
+      it("sets Z flag if result is zero", function() {
+        cpu.register.A = 0x00;
+        cpu.register[i.r] = 0x34;
+        ops[i.op]();
+        expect(cpu.flag.Z()).toEqual(1);
+      });
+
+      it("resets N flag", function() {
+        cpu.register.A = 0xF2;
+        cpu.register[i.r] = 0x34;
+        ops[i.op]();
+        expect(cpu.flag.N()).toEqual(0);
+      });
+
+      it("sets H flag", function() {
+        cpu.register.A = 0xF2;
+        cpu.register[i.r] = 0x34;
+        ops[i.op]();
+        expect(cpu.flag.H()).toEqual(1);
+      });
+
+      it("resets C flag", function() {
+        cpu.register.A = 0xF2;
+        cpu.register[i.r] = 0x34;
+        ops[i.op]();
+        expect(cpu.flag.H()).toEqual(1);
+      });
+    });
+  });
 });
