@@ -774,7 +774,7 @@ describe("ALU opcodes", function() {
     it("resets C flag", function() {
       cpu.register.A = 0xF2;
       ops[0xA7]();
-      expect(cpu.flag.H()).toEqual(1);
+      expect(cpu.flag.C()).toEqual(0);
     });
   });
 
@@ -821,8 +821,208 @@ describe("ALU opcodes", function() {
         cpu.register.A = 0xF2;
         cpu.register[i.r] = 0x34;
         ops[i.op]();
-        expect(cpu.flag.H()).toEqual(1);
+        expect(cpu.flag.C()).toEqual(0);
       });
+    });
+  });
+
+  describe("AND (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0xC4;
+      cpu.register.L = 0xB2;
+      spyOn(mmu, 'read8').and.returnValue(0x34);
+    });
+
+    it("logically ANDs A with value at address HL", function() {
+      cpu.register.A = 0xF2;
+      ops[0xA6]();
+      expect(cpu.register.A).toEqual(0x30);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      cpu.register.A = 0x00;
+      ops[0xA6]();
+      expect(cpu.flag.Z()).toEqual(1);
+    });
+
+    it("resets N flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xA6]();
+      expect(cpu.flag.N()).toEqual(0);
+    });
+
+    it("sets H flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xA6]();
+      expect(cpu.flag.H()).toEqual(1);
+    });
+
+    it("resets C flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xA6]();
+      expect(cpu.flag.C()).toEqual(0);
+    });
+  });
+
+  describe("AND n", function() {
+    beforeEach(function() {
+      spyOn(mmu, 'read8').and.returnValue(0x34);
+    });
+
+    it("logically ANDs A with 8-bit immediate value n", function() {
+      cpu.register.A = 0xF2;
+      ops[0xE6]();
+      expect(mmu.read8).toHaveBeenCalledWith(0x201);
+      expect(cpu.pc).toEqual(0x201);
+      expect(cpu.register.A).toEqual(0x30);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      cpu.register.A = 0x00;
+      ops[0xE6]();
+      expect(cpu.flag.Z()).toEqual(1);
+    });
+
+    it("resets N flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xE6]();
+      expect(cpu.flag.N()).toEqual(0);
+    });
+
+    it("sets H flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xE6]();
+      expect(cpu.flag.H()).toEqual(1);
+    });
+
+    it("resets C flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xE6]();
+      expect(cpu.flag.C()).toEqual(0);
+    });
+  });
+
+  describe("OR A", function() {
+    it("logically ORs A with A", function() {
+      cpu.register.A = 0xF2;
+      ops[0xB7]();
+      expect(cpu.register.A).toEqual(0xF2);
+      expect(cpu.register.M).toEqual(1);
+      expect(cpu.register.T).toEqual(4);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      cpu.register.A = 0;
+      ops[0xB7]();
+      expect(cpu.flag.Z()).toEqual(1);
+    });
+
+    it("resets N flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xB7]();
+      expect(cpu.flag.N()).toEqual(0);
+    });
+
+    it("resets H flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xB7]();
+      expect(cpu.flag.H()).toEqual(0);
+    });
+
+    it("resets C flag", function() {
+      cpu.register.A = 0xF2;
+      ops[0xB7]();
+      expect(cpu.flag.C()).toEqual(0);
+    });
+  });
+
+  [
+    { r: 'B', op: 0xB0 },
+    { r: 'C', op: 0xB1 },
+    { r: 'D', op: 0xB2 },
+    { r: 'E', op: 0xB3 },
+    { r: 'H', op: 0xB4 },
+    { r: 'L', op: 0xB5 }
+  ].forEach(function(i) {
+    beforeEach(function() {
+      cpu.register.A = 0xF2;
+      cpu.register[i.r] = 0x3F;
+    });
+
+    describe("OR " + i.r, function() {
+      it("logically ORs A with " + i.r, function() {
+        ops[i.op]();
+        expect(cpu.register.A).toEqual(0xFF);
+        expect(cpu.register.M).toEqual(1);
+        expect(cpu.register.T).toEqual(4);
+      });
+
+      it("sets Z flag if result is zero", function() {
+        cpu.register.A = 0x00;
+        cpu.register[i.r] = 0x00;
+        ops[i.op]();
+        expect(cpu.flag.Z()).toEqual(1);
+      });
+
+      it("resets N flag", function() {
+        ops[i.op]();
+        expect(cpu.flag.N()).toEqual(0);
+      });
+
+      it("resets H flag", function() {
+        ops[i.op]();
+        expect(cpu.flag.H()).toEqual(0);
+      });
+
+      it("resets C flag", function() {
+        ops[i.op]();
+        expect(cpu.flag.C()).toEqual(0);
+      });
+    });
+  });
+
+  describe("OR (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0xC4;
+      cpu.register.L = 0xB2;
+      cpu.register.A = 0xF2;
+    });
+
+    it("logically ORs A with value in address HL", function() {
+      spyOn(mmu, 'read8').and.returnValue(0x3F);
+      ops[0xB6]();
+      expect(cpu.register.A).toEqual(0xFF);
+      expect(cpu.register.M).toEqual(1);
+      expect(cpu.register.T).toEqual(4);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      spyOn(mmu, 'read8').and.returnValue(0);
+      cpu.register.A = 0;
+      ops[0xB6]();
+      expect(cpu.flag.Z()).toEqual(1);
+    });
+
+    it("resets N flag", function() {
+      spyOn(mmu, 'read8').and.returnValue(0);
+      ops[0xB6]();
+      expect(cpu.flag.N()).toEqual(0);
+    });
+
+    it("resets H flag", function() {
+      spyOn(mmu, 'read8').and.returnValue(0);
+      ops[0xB6]();
+      expect(cpu.flag.H()).toEqual(0);
+    });
+
+    it("resets C flag", function() {
+      spyOn(mmu, 'read8').and.returnValue(0);
+      ops[0xB6]();
+      expect(cpu.flag.C()).toEqual(0);
     });
   });
 });
