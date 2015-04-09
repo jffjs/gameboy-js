@@ -996,8 +996,8 @@ describe("ALU opcodes", function() {
       spyOn(mmu, 'read8').and.returnValue(0x3F);
       ops[0xB6]();
       expect(cpu.register.A).toEqual(0xFF);
-      expect(cpu.register.M).toEqual(1);
-      expect(cpu.register.T).toEqual(4);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -1022,6 +1022,47 @@ describe("ALU opcodes", function() {
     it("resets C flag", function() {
       spyOn(mmu, 'read8').and.returnValue(0);
       ops[0xB6]();
+      expect(cpu.flag.C()).toEqual(0);
+    });
+  });
+
+  describe("OR n", function() {
+    beforeEach(function() {
+      cpu.register.A = 0xF2;
+    });
+
+    it("logically ORs A with 8-bit immediate value", function() {
+      spyOn(mmu, 'read8').and.returnValue(0x3F);
+      ops[0xF6]();
+      expect(cpu.register.A).toEqual(0xFF);
+      expect(mmu.read8).toHaveBeenCalledWith(0x201);
+      expect(cpu.pc).toEqual(0x201);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      spyOn(mmu, 'read8').and.returnValue(0);
+      cpu.register.A = 0;
+      ops[0xF6]();
+      expect(cpu.flag.Z()).toEqual(1);
+    });
+
+    it("resets N flag", function() {
+      spyOn(mmu, 'read8').and.returnValue(0);
+      ops[0xF6]();
+      expect(cpu.flag.N()).toEqual(0);
+    });
+
+    it("resets H flag", function() {
+      spyOn(mmu, 'read8').and.returnValue(0);
+      ops[0xF6]();
+      expect(cpu.flag.H()).toEqual(0);
+    });
+
+    it("resets C flag", function() {
+      spyOn(mmu, 'read8').and.returnValue(0);
+      ops[0xF6]();
       expect(cpu.flag.C()).toEqual(0);
     });
   });
