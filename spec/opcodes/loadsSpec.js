@@ -1,3 +1,5 @@
+/*global require, describe, it, beforeEach, spyOn expect*/
+
 var CPU = require('../../lib/cpu');
 var MMU = require('../../lib/mmu');
 var loads = require('../../lib/opcodes/loads');
