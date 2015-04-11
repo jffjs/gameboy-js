@@ -1068,4 +1068,82 @@ describe("ALU opcodes", function() {
       expect(cpu.flag.C()).toEqual(0);
     });
   });
+
+  describe("XOR A", function() {
+    beforeEach(function() {
+      cpu.register.A = 0xF2;
+    });
+
+    it("logically XORs A with A", function() {
+      ops[0xAF]();
+      expect(cpu.register.A).toEqual(0x0);
+      expect(cpu.register.M).toEqual(1);
+      expect(cpu.register.T).toEqual(4);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      ops[0xAF]();
+      expect(cpu.flag.Z()).toEqual(1);
+    });
+
+    it("resets N flag", function() {
+      ops[0xAF]();
+      expect(cpu.flag.N()).toEqual(0);
+    });
+
+    it("resets H flag", function() {
+      ops[0xAF]();
+      expect(cpu.flag.H()).toEqual(0);
+    });
+
+    it("resets C flag", function() {
+      ops[0xAF]();
+      expect(cpu.flag.C()).toEqual(0);
+    });
+  });
+
+  [
+    { r: 'B', op: 0xA8 },
+    { r: 'C', op: 0xA9 },
+    { r: 'D', op: 0xAA },
+    { r: 'E', op: 0xAB },
+    { r: 'H', op: 0xAC },
+    { r: 'L', op: 0xAD }
+  ].forEach(function(i) {
+    beforeEach(function() {
+      cpu.register.A = 0xF2;
+      cpu.register[i.r] = 0x3F;
+    });
+
+    describe("OR " + i.r, function() {
+      it("logically ORs A with " + i.r, function() {
+        ops[i.op]();
+        expect(cpu.register.A).toEqual(0xCD);
+        expect(cpu.register.M).toEqual(1);
+        expect(cpu.register.T).toEqual(4);
+      });
+
+      it("sets Z flag if result is zero", function() {
+        cpu.register.A = 0x00;
+        cpu.register[i.r] = 0x00;
+        ops[i.op]();
+        expect(cpu.flag.Z()).toEqual(1);
+      });
+
+      it("resets N flag", function() {
+        ops[i.op]();
+        expect(cpu.flag.N()).toEqual(0);
+      });
+
+      it("resets H flag", function() {
+        ops[i.op]();
+        expect(cpu.flag.H()).toEqual(0);
+      });
+
+      it("resets C flag", function() {
+        ops[i.op]();
+        expect(cpu.flag.C()).toEqual(0);
+      });
+    });
+  });
 });
