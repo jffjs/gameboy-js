@@ -1115,8 +1115,8 @@ describe("ALU opcodes", function() {
       cpu.register[i.r] = 0x3F;
     });
 
-    describe("OR " + i.r, function() {
-      it("logically ORs A with " + i.r, function() {
+    describe("XOR " + i.r, function() {
+      it("logically XORs A with " + i.r, function() {
         ops[i.op]();
         expect(cpu.register.A).toEqual(0xCD);
         expect(cpu.register.M).toEqual(1);
@@ -1141,6 +1141,153 @@ describe("ALU opcodes", function() {
       });
 
       it("resets C flag", function() {
+        ops[i.op]();
+        expect(cpu.flag.C()).toEqual(0);
+      });
+    });
+  });
+
+  describe("XOR (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0xC4;
+      cpu.register.L = 0xB2;
+      cpu.register.A = 0xF2;
+      spyOn(mmu, 'read8').and.returnValue(0x3F);
+    });
+
+    it("logically XORs A with value in address HL", function() {
+      ops[0xAE]();
+      expect(cpu.register.A).toEqual(0xCD);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      cpu.register.A = 0x3F;
+      ops[0xAE]();
+      expect(cpu.flag.Z()).toEqual(1);
+    });
+
+    it("resets N flag", function() {
+      ops[0xAE]();
+      expect(cpu.flag.N()).toEqual(0);
+    });
+
+    it("resets H flag", function() {
+      ops[0xAE]();
+      expect(cpu.flag.H()).toEqual(0);
+    });
+
+    it("resets C flag", function() {
+      ops[0xAE]();
+      expect(cpu.flag.C()).toEqual(0);
+    });
+  });
+
+  describe("OR n", function() {
+    beforeEach(function() {
+      cpu.register.A = 0xF2;
+      spyOn(mmu, 'read8').and.returnValue(0x3F);
+    });
+
+    it("logically ORs A with 8-bit immediate value", function() {
+      ops[0xEE]();
+      expect(cpu.register.A).toEqual(0xCD);
+      expect(mmu.read8).toHaveBeenCalledWith(0x201);
+      expect(cpu.pc).toEqual(0x201);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      cpu.register.A = 0x3F;
+      ops[0xEE]();
+      expect(cpu.flag.Z()).toEqual(1);
+    });
+
+    it("resets N flag", function() {
+      ops[0xEE]();
+      expect(cpu.flag.N()).toEqual(0);
+    });
+
+    it("resets H flag", function() {
+      ops[0xEE]();
+      expect(cpu.flag.H()).toEqual(0);
+    });
+
+    it("resets C flag", function() {
+      ops[0xEE]();
+      expect(cpu.flag.C()).toEqual(0);
+    });
+  });
+
+  describe("CP A", function() {
+    it("sets Z flag", function() {
+      cpu.register.A = 0x3F;
+      ops[0xBF]();
+      expect(cpu.flag.Z()).toEqual(1);
+    });
+
+    it("sets N flag", function() {
+      cpu.register.A = 0x3F;
+      ops[0xBF]();
+      expect(cpu.flag.N()).toEqual(1);
+    });
+
+    it("resets H flag", function() {
+      cpu.register.A = 0x3F;
+      ops[0xBF]();
+      expect(cpu.flag.H()).toEqual(0);
+    });
+
+    it("resets C flag", function() {
+      cpu.register.A = 0x3F;
+      ops[0xBF]();
+      expect(cpu.flag.C()).toEqual(0);
+    });
+  });
+
+  [
+    { r: 'B', op: 0xB8 },
+    { r: 'C', op: 0xB9 },
+    { r: 'D', op: 0xBA },
+    { r: 'E', op: 0xBB },
+    { r: 'H', op: 0xBC },
+    { r: 'L', op: 0xBD }
+  ].forEach(function(i) {
+    describe("CP " + i.r, function() {
+      it("sets Z flag if A = " + i.r, function() {
+        cpu.register.A = 0x35;
+        cpu.register[i.r] = 0x35;
+        ops[i.op]();
+        expect(cpu.flag.Z()).toEqual(1);
+
+        cpu.register.A = 0x42;
+        ops[i.op]();
+        expect(cpu.flag.Z()).toEqual(0);
+      });
+
+      it("sets N flag", function() {
+        cpu.register.A = 0x35;
+        cpu.register[i.r] = 0x35;
+        ops[i.op]();
+        expect(cpu.flag.N()).toEqual(1);
+      });
+
+      it("sets H flag if borrow from bit 4", function() {
+        cpu.register.A = 0x43;
+        cpu.register[i.r] = 0x35;
+        ops[i.op]();
+        expect(cpu.flag.H()).toEqual(1);
+      });
+
+      it("sets C flag if A < " + i.r, function() {
+        cpu.register.A = 0x13;
+        cpu.register[i.r] = 0x35;
+        ops[i.op]();
+        expect(cpu.flag.C()).toEqual(1);
+
+        cpu.register.A = 0x43;
         ops[i.op]();
         expect(cpu.flag.C()).toEqual(0);
       });
