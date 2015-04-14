@@ -1222,6 +1222,13 @@ describe("ALU opcodes", function() {
   });
 
   describe("CP A", function() {
+    it("compares A to A", function() {
+      cpu.register.A = 0x35;
+      ops[0xBF]();
+      expect(cpu.register.M).toEqual(1);
+      expect(cpu.register.T).toEqual(4);
+    });
+
     it("sets Z flag", function() {
       cpu.register.A = 0x3F;
       ops[0xBF]();
@@ -1256,6 +1263,14 @@ describe("ALU opcodes", function() {
     { r: 'L', op: 0xBD }
   ].forEach(function(i) {
     describe("CP " + i.r, function() {
+      it("compares " + i.r + " to A", function() {
+        cpu.register.A = 0x35;
+        cpu.register[i.r] = 0x35;
+        ops[i.op]();
+        expect(cpu.register.M).toEqual(1);
+        expect(cpu.register.T).toEqual(4);
+      });
+
       it("sets Z flag if A = " + i.r, function() {
         cpu.register.A = 0x35;
         cpu.register[i.r] = 0x35;
@@ -1291,6 +1306,101 @@ describe("ALU opcodes", function() {
         ops[i.op]();
         expect(cpu.flag.C()).toEqual(0);
       });
+    });
+  });
+
+  describe("CP (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0xC4;
+      cpu.register.L = 0xB2;
+      spyOn(mmu, 'read8').and.returnValue(0x3F);
+    });
+
+    it("compares the value at address HL to A", function() {
+      cpu.register.A = 0x35;
+      ops[0xBE]();
+      expect(mmu.read8).toHaveBeenCalledWith(0xC4B2);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+
+    it("sets Z flag if A = value at address HL", function() {
+      cpu.register.A = 0x3F;
+      ops[0xBE]();
+      expect(cpu.flag.Z()).toEqual(1);
+
+      cpu.register.A = 0x42;
+      ops[0xBE]();
+      expect(cpu.flag.Z()).toEqual(0);
+    });
+
+    it("sets N flag", function() {
+      cpu.register.A = 0x3F;
+      ops[0xBE]();
+      expect(cpu.flag.N()).toEqual(1);
+    });
+
+    it("sets H flag if borrow from bit 4", function() {
+      cpu.register.A = 0x43;
+      ops[0xBE]();
+      expect(cpu.flag.H()).toEqual(1);
+    });
+
+    it("sets C flag if A < value at address HL", function() {
+      cpu.register.A = 0x13;
+      ops[0xBE]();
+      expect(cpu.flag.C()).toEqual(1);
+
+      cpu.register.A = 0x43;
+      ops[0xBE]();
+      expect(cpu.flag.C()).toEqual(0);
+    });
+  });
+
+  describe("CP n", function() {
+    beforeEach(function() {
+      spyOn(mmu, 'read8').and.returnValue(0x3F);
+    });
+
+    it("compares 8-bit immediate value n to A", function() {
+      cpu.register.A = 0x35;
+      ops[0xFE]();
+      expect(mmu.read8).toHaveBeenCalledWith(0x201);
+      expect(cpu.pc).toEqual(0x201);
+      expect(cpu.register.M).toEqual(2);
+      expect(cpu.register.T).toEqual(8);
+    });
+
+    it("sets Z flag if A = 8-bit immediate value n", function() {
+      cpu.register.A = 0x3F;
+      ops[0xBE]();
+      expect(cpu.flag.Z()).toEqual(1);
+
+      cpu.register.A = 0x42;
+      ops[0xFE]();
+      expect(cpu.flag.Z()).toEqual(0);
+    });
+
+    it("sets N flag", function() {
+      cpu.register.A = 0x3F;
+      ops[0xFE]();
+      expect(cpu.flag.N()).toEqual(1);
+    });
+
+    it("sets H flag if borrow from bit 4", function() {
+      cpu.register.A = 0x43;
+      ops[0xFE]();
+      expect(cpu.flag.H()).toEqual(1);
+    });
+
+    it("sets C flag if A < 8-bit immediate value n", function() {
+      cpu.register.A = 0x13;
+      ops[0xFE]();
+      expect(cpu.flag.C()).toEqual(1);
+
+      cpu.register.A = 0x43;
+      ops[0xFE]();
+      expect(cpu.flag.C()).toEqual(0);
     });
   });
 });
