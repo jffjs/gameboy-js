@@ -1452,4 +1452,110 @@ describe("ALU opcodes", function() {
       });
     });
   });
+
+  describe("INC (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0xB2;
+      cpu.register.L = 0x5E;
+    });
+
+    it("increments the value at address HL", function() {
+      mockMMU.expects('read8').once().withArgs(0xB25E).returns(0x50);
+      mockMMU.expects('write8').once().withArgs(0xB25E, 0x51);
+      ops[0x34]();
+      mockMMU.verify();
+      expect(cpu.register.M).to.equal(3);
+      expect(cpu.register.T).to.equal(12);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      mockMMU.expects('read8').once().withArgs(0xB25E).returns(0xFF);
+      // mockMMU.expects('write8').once().withArgs(0xB25E, 0x51);
+      ops[0x34]();
+      expect(cpu.flag.Z()).to.equal(1);
+    });
+
+    it("resets N flag", function() {
+      ops[0x34]();
+      expect(cpu.flag.N()).to.equal(0);
+    });
+
+    it("sets H flag if carry from bit 3", function() {
+      mockMMU.expects('read8').returns(0x3F);
+      ops[0x34]();
+      expect(cpu.flag.H()).to.equal(1);
+    });
+  });
+
+  [
+    { r: 'A', op: 0x3D },
+    { r: 'B', op: 0x05 },
+    { r: 'C', op: 0x0D },
+    { r: 'D', op: 0x15 },
+    { r: 'E', op: 0x1D },
+    { r: 'H', op: 0x25 },
+    { r: 'L', op: 0x2D }
+  ].forEach(function(i) {
+    describe("DEC " + i.r, function() {
+      it("decrements " + i.r, function() {
+        cpu.register[i.r] = 0x34;
+        ops[i.op]();
+        expect(cpu.register[i.r]).to.equal(0x33);
+        expect(cpu.register.M).to.equal(1);
+        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("sets Z flag if result is zero", function() {
+        cpu.register[i.r] = 0x01;
+        ops[i.op]();
+        expect(cpu.flag.Z()).to.equal(1);
+      });
+
+      it("sets N flag", function() {
+        cpu.register[i.r] = 0x34;
+        ops[i.op]();
+        expect(cpu.flag.N()).to.equal(1);
+      });
+
+      it("sets H flag if borrow from bit 4", function() {
+        cpu.register[i.r] = 0x30;
+        ops[i.op]();
+        expect(cpu.flag.H()).to.equal(1);
+      });
+    });
+  });
+
+  describe("DEC (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0xB2;
+      cpu.register.L = 0x5E;
+    });
+
+    it("increments the value at address HL", function() {
+      mockMMU.expects('read8').once().withArgs(0xB25E).returns(0x50);
+      mockMMU.expects('write8').once().withArgs(0xB25E, 0x4F);
+      ops[0x35]();
+      mockMMU.verify();
+      expect(cpu.register.M).to.equal(3);
+      expect(cpu.register.T).to.equal(12);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      mockMMU.expects('read8').once().withArgs(0xB25E).returns(0x01);
+      ops[0x35]();
+      expect(cpu.flag.Z()).to.equal(1);
+    });
+
+    it("sets N flag", function() {
+      ops[0x35]();
+      expect(cpu.flag.N()).to.equal(1);
+    });
+
+    it("sets H flag if borrow from bit 4", function() {
+      mockMMU.expects('read8').returns(0x30);
+      ops[0x35]();
+      expect(cpu.flag.H()).to.equal(1);
+    });
+  });
+
 });
