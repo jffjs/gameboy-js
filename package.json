@@ -24,12 +24,15 @@
   "homepage": "https://github.com/jffjs/gameboy-js",
   "devDependencies": {
     "beefy": "^2.1.3",
+    "chai": "^2.2.0",
     "jasmine": "^2.2.1",
     "jasmine-core": "^2.2.0",
     "karma": "^0.12.31",
     "karma-browserify": "^4.0.0",
     "karma-chrome-launcher": "^0.1.7",
     "karma-jasmine": "^0.3.5",
+    "mocha": "^2.2.4",
+    "sinon": "^1.14.1",
     "watchify": "^2.6.2"
   }
 }
