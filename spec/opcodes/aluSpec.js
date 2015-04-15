@@ -1414,4 +1414,42 @@ describe("ALU opcodes", function() {
       expect(cpu.flag.C()).to.equal(0);
     });
   });
+
+  [
+    { r: 'A', op: 0x3C },
+    { r: 'B', op: 0x04 },
+    { r: 'C', op: 0x0C },
+    { r: 'D', op: 0x14 },
+    { r: 'E', op: 0x1C },
+    { r: 'H', op: 0x24 },
+    { r: 'L', op: 0x2C }
+  ].forEach(function(i) {
+    describe("INC " + i.r, function() {
+      it("increments " + i.r, function() {
+        cpu.register[i.r] = 0x34;
+        ops[i.op]();
+        expect(cpu.register[i.r]).to.equal(0x35);
+        expect(cpu.register.M).to.equal(1);
+        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("sets Z flag if result is zero", function() {
+        cpu.register[i.r] = 0xFF;
+        ops[i.op]();
+        expect(cpu.flag.Z()).to.equal(1);
+      });
+
+      it("resets N flag", function() {
+        cpu.register[i.r] = 0x34;
+        ops[i.op]();
+        expect(cpu.flag.N()).to.equal(0);
+      });
+
+      it("sets H flag if carry from bit 3", function() {
+        cpu.register[i.r] = 0x3F;
+        ops[i.op]();
+        expect(cpu.flag.H()).to.equal(1);
+      });
+    });
+  });
 });
