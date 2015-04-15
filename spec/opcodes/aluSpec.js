@@ -1228,6 +1228,13 @@ describe("ALU opcodes", function() {
   });
 
   describe("CP A", function() {
+    it("compares A to A", function() {
+      cpu.register.A = 0x35;
+      ops[0xBF]();
+      expect(cpu.register.M).to.equal(1);
+      expect(cpu.register.T).to.equal(4);
+    });
+
     it("sets Z flag", function() {
       cpu.register.A = 0x3F;
       ops[0xBF]();
@@ -1262,6 +1269,14 @@ describe("ALU opcodes", function() {
     { r: 'L', op: 0xBD }
   ].forEach(function(i) {
     describe("CP " + i.r, function() {
+      it("compares " + i.r + " to A", function() {
+        cpu.register.A = 0x35;
+        cpu.register[i.r] = 0x35;
+        ops[i.op]();
+        expect(cpu.register.M).to.equal(1);
+        expect(cpu.register.T).to.equal(4);
+      });
+
       it("sets Z flag if A = " + i.r, function() {
         cpu.register.A = 0x35;
         cpu.register[i.r] = 0x35;
@@ -1297,6 +1312,106 @@ describe("ALU opcodes", function() {
         ops[i.op]();
         expect(cpu.flag.C()).to.equal(0);
       });
+    });
+  });
+
+  describe("CP (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0xC4;
+      cpu.register.L = 0xB2;
+    });
+
+    it("compares the value at address HL to A", function() {
+      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3F);
+      cpu.register.A = 0x35;
+      ops[0xBE]();
+      mockMMU.verify();
+      expect(cpu.register.M).to.equal(2);
+      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("sets Z flag if A = value at address HL", function() {
+      mockMMU.expects('read8').twice().withArgs(0xC4B2).returns(0x3F);
+      cpu.register.A = 0x3F;
+      ops[0xBE]();
+      expect(cpu.flag.Z()).to.equal(1);
+
+      cpu.register.A = 0x42;
+      ops[0xBE]();
+      expect(cpu.flag.Z()).to.equal(0);
+    });
+
+    it("sets N flag", function() {
+      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3F);
+      cpu.register.A = 0x3F;
+      ops[0xBE]();
+      expect(cpu.flag.N()).to.equal(1);
+    });
+
+    it("sets H flag if borrow from bit 4", function() {
+      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3F);
+      cpu.register.A = 0x43;
+      ops[0xBE]();
+      expect(cpu.flag.H()).to.equal(1);
+    });
+
+    it("sets C flag if A < value at address HL", function() {
+      mockMMU.expects('read8').twice().withArgs(0xC4B2).returns(0x3F);
+      cpu.register.A = 0x13;
+      ops[0xBE]();
+      expect(cpu.flag.C()).to.equal(1);
+
+      cpu.register.A = 0x43;
+      ops[0xBE]();
+      expect(cpu.flag.C()).to.equal(0);
+    });
+  });
+
+  describe("CP n", function() {
+    it("compares 8-bit immediate value n to A", function() {
+      mockMMU.expects('read8').withArgs(0x201).returns(0x3F);
+      cpu.register.A = 0x35;
+      ops[0xFE]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0x201);
+      expect(cpu.register.M).to.equal(2);
+      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("sets Z flag if A = 8-bit immediate value n", function() {
+      mockMMU.expects('read8').twice().returns(0x3F);
+      cpu.register.A = 0x3F;
+      ops[0xFE]();
+      expect(cpu.flag.Z()).to.equal(1);
+
+      cpu.register.A = 0x42;
+      ops[0xFE]();
+      expect(cpu.flag.Z()).to.equal(0);
+    });
+
+    it("sets N flag", function() {
+      mockMMU.expects('read8').withArgs(0x201).returns(0x3F);
+      cpu.register.A = 0x3F;
+      ops[0xFE]();
+      expect(cpu.flag.N()).to.equal(1);
+    });
+
+    it("sets H flag if borrow from bit 4", function() {
+      mockMMU.expects('read8').withArgs(0x201).returns(0x3F);
+      cpu.register.A = 0x43;
+      ops[0xFE]();
+      expect(cpu.flag.H()).to.equal(1);
+    });
+
+    it("sets C flag if A < 8-bit immediate value n", function() {
+      mockMMU.expects('read8').twice().returns(0x3F);
+      cpu.register.A = 0x13;
+      ops[0xFE]();
+      expect(cpu.flag.C()).to.equal(1);
+
+      cpu.register.A = 0x43;
+      ops[0xFE]();
+      expect(cpu.flag.C()).to.equal(0);
     });
   });
 });
