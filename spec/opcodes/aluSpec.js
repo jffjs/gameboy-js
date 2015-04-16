@@ -1558,4 +1558,35 @@ describe("ALU opcodes", function() {
     });
   });
 
+  describe("ADD HL, BC", function() {
+    beforeEach(function() {
+      cpu.register.B = 0x23;
+      cpu.register.C = 0x10;
+      cpu.register.H = 0x4C;
+      cpu.register.L = 0x2E;
+    });
+
+    it("adds BC to HL", function() {
+      ops[0x09]();
+      expect(cpu.register.H).to.equal(0x6F);
+      expect(cpu.register.L).to.equal(0x3E);
+    });
+
+    it("resets N flag", function() {
+      ops[0x09]();
+      expect(cpu.flag.F()).to.equal(0);
+    });
+
+    it("sets H flag if carry from bit 11", function() {
+      cpu.register.B = 0x25;
+      ops[0x09]();
+      expect(cpu.flag.H()).to.equal(1);
+    });
+
+    it("sets C flag if carry from bit 15", function() {
+      cpu.register.B = 0xF5;
+      ops[0x09]();
+      expect(cpu.flag.C()).to.equal(1);
+    });
+  });
 });
