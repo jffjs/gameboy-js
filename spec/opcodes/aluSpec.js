@@ -1558,35 +1558,236 @@ describe("ALU opcodes", function() {
     });
   });
 
-  describe("ADD HL, BC", function() {
+  [
+    { rr: 'BC', op: 0x09 },
+    { rr: 'DE', op: 0x19 }
+  ].forEach(function(i) {
+    var spl = i.rr.split(''),
+        r1 = spl[0], r2 = spl[1];
+
+    describe("ADD HL, " + i.rr, function() {
+      beforeEach(function() {
+        cpu.register[r1] = 0x23;
+        cpu.register[r2] = 0x10;
+        cpu.register.H = 0x4C;
+        cpu.register.L = 0x2E;
+      });
+
+      it("adds " + i.rr + " to HL", function() {
+        ops[i.op]();
+        expect(cpu.register.H).to.equal(0x6F);
+        expect(cpu.register.L).to.equal(0x3E);
+        expect(cpu.register.M).to.equal(2);
+        expect(cpu.register.T).to.equal(8);
+      });
+
+      it("resets N flag", function() {
+        ops[i.op]();
+        expect(cpu.flag.N()).to.equal(0);
+      });
+
+      it("sets H flag if carry from bit 11", function() {
+        cpu.register[r1] = 0x25;
+        ops[i.op]();
+        expect(cpu.flag.H()).to.equal(1);
+      });
+
+      it("sets C flag if carry from bit 15", function() {
+        cpu.register[r1] = 0xF5;
+        ops[i.op]();
+        expect(cpu.flag.C()).to.equal(1);
+      });
+    });
+  });
+
+  describe("ADD HL, HL", function() {
     beforeEach(function() {
-      cpu.register.B = 0x23;
-      cpu.register.C = 0x10;
       cpu.register.H = 0x4C;
       cpu.register.L = 0x2E;
     });
 
-    it("adds BC to HL", function() {
-      ops[0x09]();
-      expect(cpu.register.H).to.equal(0x6F);
-      expect(cpu.register.L).to.equal(0x3E);
+    it("adds HL to HL", function() {
+      ops[0x29]();
+      expect(cpu.register.H).to.equal(0x98);
+      expect(cpu.register.L).to.equal(0x5C);
+      expect(cpu.register.M).to.equal(2);
+      expect(cpu.register.T).to.equal(8);
     });
 
     it("resets N flag", function() {
-      ops[0x09]();
-      expect(cpu.flag.F()).to.equal(0);
+      ops[0x29]();
+      expect(cpu.flag.N()).to.equal(0);
     });
 
     it("sets H flag if carry from bit 11", function() {
-      cpu.register.B = 0x25;
-      ops[0x09]();
+      cpu.register.H = 0x2F;
+      ops[0x29]();
       expect(cpu.flag.H()).to.equal(1);
     });
 
     it("sets C flag if carry from bit 15", function() {
-      cpu.register.B = 0xF5;
-      ops[0x09]();
+      cpu.register.H = 0xF0;
+      ops[0x29]();
       expect(cpu.flag.C()).to.equal(1);
+    });
+  });
+
+  describe("ADD HL, SP", function() {
+    beforeEach(function() {
+      cpu.register.H = 0x4C;
+      cpu.register.L = 0x2E;
+      cpu.sp = 0x3456;
+    });
+
+    it("adds HL to HL", function() {
+      ops[0x39]();
+      expect(cpu.register.H).to.equal(0x80);
+      expect(cpu.register.L).to.equal(0x84);
+      expect(cpu.register.M).to.equal(2);
+      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("resets N flag", function() {
+      ops[0x39]();
+      expect(cpu.flag.N()).to.equal(0);
+    });
+
+    it("sets H flag if carry from bit 11", function() {
+      cpu.register.H = 0x2F;
+      ops[0x39]();
+      expect(cpu.flag.H()).to.equal(1);
+    });
+
+    it("sets C flag if carry from bit 15", function() {
+      cpu.register.H = 0xF0;
+      ops[0x39]();
+      expect(cpu.flag.C()).to.equal(1);
+    });
+  });
+
+  describe("ADD SP, n", function() {
+    it("adds signed 8-bit immediate value to SP", function() {
+      mockMMU.expects('read8').once().withArgs(0x201).returns(0x0A);
+      cpu.sp = 0xAB90;
+      ops[0xE8]();
+      mockMMU.verify();
+      expect(cpu.sp).to.equal(0xAB9A);
+      expect(cpu.pc).to.equal(0x201);
+      expect(cpu.register.M).to.equal(4);
+      expect(cpu.register.T).to.equal(16);
+    });
+
+    it("adds signed 8-bit immediate value to SP (negative n)", function() {
+      mockMMU.expects('read8').once().withArgs(0x201).returns(0xFE);
+      cpu.sp = 0xAB90;
+      ops[0xE8]();
+      mockMMU.verify();
+      expect(cpu.sp).to.equal(0xAB8E);
+    });
+
+    it("resets Z flag", function() {
+      mockMMU.expects('read8').returns(0x0A);
+      cpu.sp = 0xAB90;
+      ops[0xE8]();
+      expect(cpu.flag.Z()).to.equal(0);
+    });
+
+    it("resets N flag", function() {
+      mockMMU.expects('read8').returns(0x0A);
+      cpu.sp = 0xAB90;
+      ops[0xE8]();
+      expect(cpu.flag.N()).to.equal(0);
+    });
+
+    it("sets H flag if carry from bit 11", function() {
+      mockMMU.expects('read8').returns(0x7F);
+      cpu.sp = 0x1FFA;
+      ops[0xE8]();
+      expect(cpu.flag.H()).to.equal(1);
+    });
+
+    it("sets H flag if borrow from bit 12", function() {
+      mockMMU.expects('read8').returns(0x80);
+      cpu.sp = 0x8001;
+      ops[0xE8]();
+      expect(cpu.flag.H()).to.equal(1);
+      
+    });
+
+    it("sets C flag if carry", function() {
+      mockMMU.expects('read8').returns(0x7F);
+      cpu.sp = 0xFFFA;
+      ops[0xE8]();
+      expect(cpu.flag.C()).to.equal(1);
+    });
+    
+    it("sets C flag if borrow", function() {
+      mockMMU.expects('read8').returns(0xF0);
+      cpu.sp = 0x0001;
+      ops[0xE8]();
+      expect(cpu.flag.C()).to.equal(1);
+    });
+  });
+
+  [
+    { rr: 'BC', op: 0x03 },
+    { rr: 'DE', op: 0x13 },
+    { rr: 'HL', op: 0x23 }
+  ].forEach(function(i) {
+    describe("INC " + i.rr, function() {
+      var spl = i.rr.split(''),
+          r1 = spl[0], r2 = spl[1];
+
+      it("increments " + i.rr, function() {
+        cpu.register[r1] = 0x12;
+        cpu.register[r2] = 0xFF;
+        ops[i.op]();
+        expect(cpu.register[r1]).to.equal(0x13);
+        expect(cpu.register[r2]).to.equal(0x00);
+        expect(cpu.register.M).to.equal(2);
+        expect(cpu.register.T).to.equal(8);
+      });
+    });
+  });
+
+  describe("INC SP", function() {
+    it("increments SP", function() {
+      cpu.sp = 0xFFF0;
+      ops[0x33]();
+      expect(cpu.sp).to.equal(0xFFF1);
+      expect(cpu.register.M).to.equal(2);
+      expect(cpu.register.T).to.equal(8);
+    });
+  });
+
+  [
+    { rr: 'BC', op: 0x0B },
+    { rr: 'DE', op: 0x1B },
+    { rr: 'HL', op: 0x2B }
+  ].forEach(function(i) {
+    describe("DEC " + i.rr, function() {
+      var spl = i.rr.split(''),
+          r1 = spl[0], r2 = spl[1];
+
+      it("decrements " + i.rr, function() {
+        cpu.register[r1] = 0x12;
+        cpu.register[r2] = 0x00;
+        ops[i.op]();
+        expect(cpu.register[r1]).to.equal(0x11);
+        expect(cpu.register[r2]).to.equal(0xFF);
+        expect(cpu.register.M).to.equal(2);
+        expect(cpu.register.T).to.equal(8);
+      });
+    });
+  });
+
+  describe("DEC SP", function() {
+    it("increments SP", function() {
+      cpu.sp = 0xFFF0;
+      ops[0x3B]();
+      expect(cpu.sp).to.equal(0xFFEF);
+      expect(cpu.register.M).to.equal(2);
+      expect(cpu.register.T).to.equal(8);
     });
   });
 });
