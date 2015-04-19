@@ -22,8 +22,10 @@ describe("ALU opcodes", function() {
       cpu.register.A = 0x45;
       ops[0x87]();
       expect(cpu.register.A).to.equal(0x8A);
-      expect(cpu.register.M).to.equal(1);
-      expect(cpu.register.T).to.equal(4);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0x87]()).to.equal(1);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -65,8 +67,10 @@ describe("ALU opcodes", function() {
         cpu.register.A = 0x45;
         ops[i.op]();
         expect(cpu.register.A).to.equal(0x58);
-        expect(cpu.register.M).to.equal(1);
-        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[i.op]()).to.equal(1);
       });
 
       it("sets Z flag if result is zero", function() {
@@ -111,8 +115,10 @@ describe("ALU opcodes", function() {
       ops[0x86]();
       mockMMU.verify();
       expect(cpu.register.A).to.equal(0x43);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0x86]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -152,8 +158,10 @@ describe("ALU opcodes", function() {
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x43);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xC6]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -191,8 +199,10 @@ describe("ALU opcodes", function() {
       cpu.register.A = 0x45;
       ops[0x8F]();
       expect(cpu.register.A).to.equal(0x8B);
-      expect(cpu.register.M).to.equal(1);
-      expect(cpu.register.T).to.equal(4);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0x8F]()).to.equal(1);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -239,8 +249,10 @@ describe("ALU opcodes", function() {
         cpu.register.A = 0x45;
         ops[i.op]();
         expect(cpu.register.A).to.equal(0x59);
-        expect(cpu.register.M).to.equal(1);
-        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[i.op]()).to.equal(1);
       });
 
       it("sets Z flag if result is zero", function() {
@@ -286,8 +298,10 @@ describe("ALU opcodes", function() {
       ops[0x8E]();
       mockMMU.verify();
       expect(cpu.register.A).to.equal(0x44);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0x8E]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -331,8 +345,10 @@ describe("ALU opcodes", function() {
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x44);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xCE]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -369,8 +385,10 @@ describe("ALU opcodes", function() {
       cpu.register.A = 0x78;
       ops[0x97]();
       expect(cpu.register.A).to.equal(0);
-      expect(cpu.register.M).to.equal(1);
-      expect(cpu.register.T).to.equal(4);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0x97]()).to.equal(1);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -412,8 +430,10 @@ describe("ALU opcodes", function() {
         cpu.register[i.r] = 0x43;
         ops[i.op]();
         expect(cpu.register.A).to.equal(0x35);
-        expect(cpu.register.M).to.equal(1);
-        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[i.op]()).to.equal(1);
       });
 
       it("sets Z flag if result is zero", function() {
@@ -468,8 +488,10 @@ describe("ALU opcodes", function() {
       ops[0x96]();
       mockMMU.verify();
       expect(cpu.register.A).to.equal(0x31);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0x96]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -517,8 +539,10 @@ describe("ALU opcodes", function() {
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x10);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xD6]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -556,8 +580,10 @@ describe("ALU opcodes", function() {
       cpu.register.A = 0x78;
       ops[0x9F]();
       expect(cpu.register.A).to.equal(0xFF);
-      expect(cpu.register.M).to.equal(1);
-      expect(cpu.register.T).to.equal(4);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0x9F]()).to.equal(1);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -606,8 +632,10 @@ describe("ALU opcodes", function() {
         cpu.register[i.r] = 0x43;
         ops[i.op]();
         expect(cpu.register.A).to.equal(0x34);
-        expect(cpu.register.M).to.equal(1);
-        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[i.op]()).to.equal(1);
       });
 
       it("sets Z flag if result is zero", function() {
@@ -663,8 +691,10 @@ describe("ALU opcodes", function() {
       ops[0x9E]();
       mockMMU.verify();
       expect(cpu.register.A).to.equal(0x30);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0x9E]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -716,8 +746,10 @@ describe("ALU opcodes", function() {
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x0F);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xDE]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -754,8 +786,10 @@ describe("ALU opcodes", function() {
       cpu.register.A = 0xF2;
       ops[0xA7]();
       expect(cpu.register.A).to.equal(0xF2);
-      expect(cpu.register.M).to.equal(1);
-      expect(cpu.register.T).to.equal(4);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0xA7]()).to.equal(1);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -797,8 +831,10 @@ describe("ALU opcodes", function() {
         cpu.register[i.r] = 0x34;
         ops[i.op]();
         expect(cpu.register.A).to.equal(0x30);
-        expect(cpu.register.M).to.equal(1);
-        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[i.op]()).to.equal(1);
       });
 
       it("sets Z flag if result is zero", function() {
@@ -843,8 +879,10 @@ describe("ALU opcodes", function() {
       ops[0xA6]();
       mockMMU.verify();
       expect(cpu.register.A).to.equal(0x30);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xA6]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -883,8 +921,10 @@ describe("ALU opcodes", function() {
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x30);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xE6]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -917,8 +957,10 @@ describe("ALU opcodes", function() {
       cpu.register.A = 0xF2;
       ops[0xB7]();
       expect(cpu.register.A).to.equal(0xF2);
-      expect(cpu.register.M).to.equal(1);
-      expect(cpu.register.T).to.equal(4);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0xB7]()).to.equal(1);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -963,8 +1005,10 @@ describe("ALU opcodes", function() {
       it("logically ORs A with " + i.r, function() {
         ops[i.op]();
         expect(cpu.register.A).to.equal(0xFF);
-        expect(cpu.register.M).to.equal(1);
-        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[i.op]()).to.equal(1);
       });
 
       it("sets Z flag if result is zero", function() {
@@ -1003,8 +1047,10 @@ describe("ALU opcodes", function() {
       ops[0xB6]();
       mockMMU.verify();
       expect(cpu.register.A).to.equal(0xFF);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xB6]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -1044,8 +1090,10 @@ describe("ALU opcodes", function() {
       mockMMU.verify();
       expect(cpu.register.A).to.equal(0xFF);
       expect(cpu.pc).to.equal(0x201);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xF6]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -1082,8 +1130,10 @@ describe("ALU opcodes", function() {
     it("logically XORs A with A", function() {
       ops[0xAF]();
       expect(cpu.register.A).to.equal(0x0);
-      expect(cpu.register.M).to.equal(1);
-      expect(cpu.register.T).to.equal(4);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0xAF]()).to.equal(1);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -1124,8 +1174,10 @@ describe("ALU opcodes", function() {
       it("logically XORs A with " + i.r, function() {
         ops[i.op]();
         expect(cpu.register.A).to.equal(0xCD);
-        expect(cpu.register.M).to.equal(1);
-        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[i.op]()).to.equal(1);
       });
 
       it("sets Z flag if result is zero", function() {
@@ -1164,8 +1216,10 @@ describe("ALU opcodes", function() {
       ops[0xAE]();
       mockMMU.verify();
       expect(cpu.register.A).to.equal(0xCD);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xAE]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -1201,8 +1255,10 @@ describe("ALU opcodes", function() {
       mockMMU.verify();
       expect(cpu.register.A).to.equal(0xCD);
       expect(cpu.pc).to.equal(0x201);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xEE]()).to.equal(2);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -1231,8 +1287,10 @@ describe("ALU opcodes", function() {
     it("compares A to A", function() {
       cpu.register.A = 0x35;
       ops[0xBF]();
-      expect(cpu.register.M).to.equal(1);
-      expect(cpu.register.T).to.equal(4);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0xBF]()).to.equal(1);
     });
 
     it("sets Z flag", function() {
@@ -1273,8 +1331,10 @@ describe("ALU opcodes", function() {
         cpu.register.A = 0x35;
         cpu.register[i.r] = 0x35;
         ops[i.op]();
-        expect(cpu.register.M).to.equal(1);
-        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[i.op]()).to.equal(1);
       });
 
       it("sets Z flag if A = " + i.r, function() {
@@ -1326,8 +1386,10 @@ describe("ALU opcodes", function() {
       cpu.register.A = 0x35;
       ops[0xBE]();
       mockMMU.verify();
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xBE]()).to.equal(2);
     });
 
     it("sets Z flag if A = value at address HL", function() {
@@ -1374,8 +1436,10 @@ describe("ALU opcodes", function() {
       ops[0xFE]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xFE]()).to.equal(2);
     });
 
     it("sets Z flag if A = 8-bit immediate value n", function() {
@@ -1429,8 +1493,10 @@ describe("ALU opcodes", function() {
         cpu.register[i.r] = 0x34;
         ops[i.op]();
         expect(cpu.register[i.r]).to.equal(0x35);
-        expect(cpu.register.M).to.equal(1);
-        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[i.op]()).to.equal(1);
       });
 
       it("sets Z flag if result is zero", function() {
@@ -1464,8 +1530,10 @@ describe("ALU opcodes", function() {
       mockMMU.expects('write8').once().withArgs(0xB25E, 0x51);
       ops[0x34]();
       mockMMU.verify();
-      expect(cpu.register.M).to.equal(3);
-      expect(cpu.register.T).to.equal(12);
+    });
+
+    it("takes 3 machine cycles", function() {
+      expect(ops[0x34]()).to.equal(3);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -1501,8 +1569,10 @@ describe("ALU opcodes", function() {
         cpu.register[i.r] = 0x34;
         ops[i.op]();
         expect(cpu.register[i.r]).to.equal(0x33);
-        expect(cpu.register.M).to.equal(1);
-        expect(cpu.register.T).to.equal(4);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[i.op]()).to.equal(1);
       });
 
       it("sets Z flag if result is zero", function() {
@@ -1536,8 +1606,10 @@ describe("ALU opcodes", function() {
       mockMMU.expects('write8').once().withArgs(0xB25E, 0x4F);
       ops[0x35]();
       mockMMU.verify();
-      expect(cpu.register.M).to.equal(3);
-      expect(cpu.register.T).to.equal(12);
+    });
+
+    it("takes 3 machine cycles", function() {
+      expect(ops[0x35]()).to.equal(3);
     });
 
     it("sets Z flag if result is zero", function() {
@@ -1577,8 +1649,10 @@ describe("ALU opcodes", function() {
         ops[i.op]();
         expect(cpu.register.H).to.equal(0x6F);
         expect(cpu.register.L).to.equal(0x3E);
-        expect(cpu.register.M).to.equal(2);
-        expect(cpu.register.T).to.equal(8);
+      });
+
+      it("takes 2 machine cycles", function() {
+        expect(ops[i.op]()).to.equal(2);
       });
 
       it("resets N flag", function() {
@@ -1610,8 +1684,10 @@ describe("ALU opcodes", function() {
       ops[0x29]();
       expect(cpu.register.H).to.equal(0x98);
       expect(cpu.register.L).to.equal(0x5C);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0x29]()).to.equal(2);
     });
 
     it("resets N flag", function() {
@@ -1643,8 +1719,10 @@ describe("ALU opcodes", function() {
       ops[0x39]();
       expect(cpu.register.H).to.equal(0x80);
       expect(cpu.register.L).to.equal(0x84);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0x39]()).to.equal(2);
     });
 
     it("resets N flag", function() {
@@ -1673,8 +1751,10 @@ describe("ALU opcodes", function() {
       mockMMU.verify();
       expect(cpu.sp).to.equal(0xAB9A);
       expect(cpu.pc).to.equal(0x201);
-      expect(cpu.register.M).to.equal(4);
-      expect(cpu.register.T).to.equal(16);
+    });
+
+    it("takes 4 machine cycles", function() {
+      expect(ops[0xE8]()).to.equal(4);
     });
 
     it("adds signed 8-bit immediate value to SP (negative n)", function() {
@@ -1711,7 +1791,6 @@ describe("ALU opcodes", function() {
       cpu.sp = 0x8001;
       ops[0xE8]();
       expect(cpu.flag.H()).to.equal(1);
-      
     });
 
     it("sets C flag if carry", function() {
@@ -1720,7 +1799,7 @@ describe("ALU opcodes", function() {
       ops[0xE8]();
       expect(cpu.flag.C()).to.equal(1);
     });
-    
+
     it("sets C flag if borrow", function() {
       mockMMU.expects('read8').returns(0xF0);
       cpu.sp = 0x0001;
@@ -1744,8 +1823,10 @@ describe("ALU opcodes", function() {
         ops[i.op]();
         expect(cpu.register[r1]).to.equal(0x13);
         expect(cpu.register[r2]).to.equal(0x00);
-        expect(cpu.register.M).to.equal(2);
-        expect(cpu.register.T).to.equal(8);
+      });
+
+      it("takes 2 machine cycles", function() {
+        expect(ops[i.op]()).to.equal(2);
       });
     });
   });
@@ -1755,8 +1836,10 @@ describe("ALU opcodes", function() {
       cpu.sp = 0xFFF0;
       ops[0x33]();
       expect(cpu.sp).to.equal(0xFFF1);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0x33]()).to.equal(2);
     });
   });
 
@@ -1775,8 +1858,10 @@ describe("ALU opcodes", function() {
         ops[i.op]();
         expect(cpu.register[r1]).to.equal(0x11);
         expect(cpu.register[r2]).to.equal(0xFF);
-        expect(cpu.register.M).to.equal(2);
-        expect(cpu.register.T).to.equal(8);
+      });
+
+      it("takes 2 machine cycles", function() {
+        expect(ops[i.op]()).to.equal(2);
       });
     });
   });
@@ -1786,8 +1871,10 @@ describe("ALU opcodes", function() {
       cpu.sp = 0xFFF0;
       ops[0x3B]();
       expect(cpu.sp).to.equal(0xFFEF);
-      expect(cpu.register.M).to.equal(2);
-      expect(cpu.register.T).to.equal(8);
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0x3B]()).to.equal(2);
     });
   });
 });
