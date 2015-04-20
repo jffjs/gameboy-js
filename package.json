@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "karma": "./node_modules/karma/bin/karma start",
-    "test": "./node_modules/.bin/mocha spec/**"
+    "test": "./node_modules/.bin/mocha test/**"
   },
   "repository": {
     "type": "git",
