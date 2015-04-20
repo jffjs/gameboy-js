@@ -131,4 +131,59 @@ describe("Misc opcodes", function() {
       });
     });
   });
+
+  describe("CPL", function() {
+    it("flips bits of A", function() {
+      cpu.register.A = 0xF0;
+      ops[0x2F]();
+      expect(cpu.register.A).to.equal(0x0F);
+    });
+
+    it("sets N and H flags", function() {
+      ops[0x2F]();
+      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.flag.H()).to.equal(1);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0x2F]()).to.equal(1);
+    });
+  });
+
+  describe("CCF", function() {
+    it("complements carry flag", function() {
+      cpu.setFlag('C');
+      ops[0x3F]();
+      expect(cpu.flag.C()).to.equal(0);
+      ops[0x3F]();
+      expect(cpu.flag.C()).to.equal(1);
+    });
+
+    it("resets N and H flags", function() {
+      ops[0x3F]();
+      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.flag.H()).to.equal(0);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0x3F]()).to.equal(1);
+    });
+  });
+
+  describe("SCF", function() {
+    it("sets carry flag", function() {
+      ops[0x37]();
+      expect(cpu.flag.C()).to.equal(1);
+    });
+
+    it("resets N and H flags", function() {
+      ops[0x37]();
+      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.flag.H()).to.equal(0);
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0x37]()).to.equal(1);
+    });
+  });
 });
