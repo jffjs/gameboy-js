@@ -186,4 +186,50 @@ describe("Misc opcodes", function() {
       expect(ops[0x37]()).to.equal(1);
     });
   });
+
+  describe("NOP", function() {
+    it("takes 1 machine cycle", function() {
+      expect(ops[0x00]()).to.equal(1);
+    });
+  });
+
+  describe("HALT", function() {
+    it("halts CPU until an interrupt occurs");
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0x76]()).to.equal(1);
+    });
+  });
+
+  describe("STOP", function() {
+    it("halts CPU and display until a button is pressed");
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0x1000]()).to.equal(1);
+    });
+  });
+
+  describe("DI", function() {
+    it("disables interrupts", function() {
+      cpu.enableInterrupts = true;
+      ops[0xF3]();
+      expect(cpu.enableInterrupts).to.be.false;
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0xF3]()).to.equal(1);
+    });
+  });
+
+  describe("EI", function() {
+    it("enables interrupts", function() {
+      cpu.enableInterrupts = false;
+      ops[0xFB]();
+      expect(cpu.enableInterrupts).to.be.true;
+    });
+
+    it("takes 1 machine cycle", function() {
+      expect(ops[0xFB]()).to.equal(1);
+    });
+  });
 });
