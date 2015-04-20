@@ -6,7 +6,7 @@ var CPU = require('../../lib/cpu');
 var MMU = require('../../lib/mmu');
 var bitwise = require('../../lib/opcodes/bitwise');
 
-describe.only("Bitwise opcodes", function() {
+describe("Bitwise opcodes", function() {
   var cpu, mockMMU, ops;
 
   beforeEach(function() {
