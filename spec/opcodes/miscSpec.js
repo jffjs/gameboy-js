@@ -91,7 +91,7 @@ describe("Misc opcodes", function() {
     });
   });
 
-  describe.skip("DAA", function() {
+  describe("DAA", function() {
     // N: N flag before
     // C1: C flag before
     // H: H flag before
@@ -115,7 +115,7 @@ describe("Misc opcodes", function() {
       { N: 1, C1: 1, H: 1, A1: 0x6A, A2: 0x04, C2: 1, Z: 0 },
       { N: 0, C1: 1, H: 1, A1: 0x45, A2: 0x45, C2: 1, Z: 0 }
     ].forEach(function(test) {
-      it("adjusts A register according to flags and value of A", function() {
+      it("adjusts A register according to flags when A = " + test.A1, function() {
         test.N ? cpu.setFlag('N') : cpu.resetFlag('N');
         test.C1 ? cpu.setFlag('C') : cpu.resetFlag('C');
         test.H ? cpu.setFlag('H') : cpu.resetFlag('H');
