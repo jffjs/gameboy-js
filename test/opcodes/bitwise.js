@@ -304,4 +304,74 @@ describe("Bitwise opcodes", function() {
       });
     });
   });
+
+  describe("RRC (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0x2C;
+      cpu.register.L = 0x83;
+    });
+
+    it("rotates the value in address HL left, copying bit 7 into carry flag and to bit 0", function() {
+      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0x11);
+      mockMMU.expects('write8').once().withArgs(0x2C83, 0x88);
+      ops[0xCB0E]();
+      mockMMU.verify();
+      expect(cpu.checkFlag('C')).to.equal(1);
+    });
+
+    it("takes 4 machine cycles", function() {
+      expect(ops[0xCB0E]()).to.equal(4);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
+      ops[0xCB0E]();
+      expect(cpu.checkFlag('Z')).to.equal(1);
+    });
+
+    it("resets N and H flags", function() {
+      cpu.setFlag('N');
+      cpu.setFlag('H');
+      ops[0xCB0E]();
+      expect(cpu.checkFlag('N')).to.equal(0);
+      expect(cpu.checkFlag('H')).to.equal(0);
+    });
+  });
+
+  [
+    { r: 'A', op: 0xCB1F },
+    { r: 'B', op: 0xCB18 },
+    { r: 'C', op: 0xCB19 },
+    { r: 'D', op: 0xCB1A },
+    { r: 'E', op: 0xCB1B },
+    { r: 'H', op: 0xCB1C },
+    { r: 'L', op: 0xCB1D }
+  ].forEach(function(test) {
+    describe("RR " + test.r, function() {
+      it("roates " + test.r + " right through carry flag", function() {
+        cpu.register[test.r] = 0x11;
+        ops[test.op]();
+        expect(cpu.register[test.r]).to.equal(0x08);
+        expect(cpu.checkFlag('C')).to.equal(1);
+      });
+
+      it("takes 1 machine cycle", function() {
+        expect(ops[test.op]()).to.equal(2);
+      });
+
+      it("sets Z flag if result is zero", function() {
+        cpu.register[test.r] = 0;
+        ops[test.op]();
+        expect(cpu.checkFlag('Z')).to.equal(1);
+      });
+
+      it("resets N and H flags", function() {
+        cpu.setFlag('N');
+        cpu.setFlag('H');
+        ops[test.op]();
+        expect(cpu.checkFlag('N')).to.equal(0);
+        expect(cpu.checkFlag('H')).to.equal(0);
+      });
+    });
+  });
 });
