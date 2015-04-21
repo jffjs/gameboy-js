@@ -444,4 +444,37 @@ describe("Bitwise opcodes", function() {
       });
     });
   });
+
+  describe("SLA (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0x2C;
+      cpu.register.L = 0x83;
+    });
+
+    it("shifts value at address HL left into carry flag", function() {
+      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0x88);
+      mockMMU.expects('write8').once().withArgs(0x2C83, 0x10);
+      ops[0xCB26]();
+      mockMMU.verify();
+      expect(cpu.checkFlag('C')).to.equal(1);
+    });
+
+    it("takes 4 machine cycles", function() {
+      expect(ops[0xCB26]()).to.equal(4);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      mockMMU.expects('read8').returns(0);
+      ops[0xCB26]();
+      expect(cpu.checkFlag('Z')).to.equal(1);
+    });
+
+    it("resets N and H flags", function() {
+      cpu.setFlag('N');
+      cpu.setFlag('H');
+      ops[0xCB26]();
+      expect(cpu.checkFlag('N')).to.equal(0);
+      expect(cpu.checkFlag('H')).to.equal(0);
+    });
+  });
 });
