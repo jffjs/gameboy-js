@@ -488,7 +488,7 @@ describe("Bitwise opcodes", function() {
     { r: 'L', op: 0xCB2D }
   ].forEach(function(test) {
     describe("SRA " + test.r, function() {
-      it("shifts " + test.r + " left into carry flag", function() {
+      it("shifts " + test.r + " right into carry flag, preserving most significant bit", function() {
         cpu.register[test.r] = 0x91;
         ops[test.op]();
         expect(cpu.register[test.r]).to.equal(0xC8);
@@ -512,6 +512,109 @@ describe("Bitwise opcodes", function() {
         expect(cpu.checkFlag('N')).to.equal(0);
         expect(cpu.checkFlag('H')).to.equal(0);
       });
+    });
+  });
+
+  describe("SRA (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0x2C;
+      cpu.register.L = 0x83;
+    });
+
+    it("shifts value at address HL right into carry flag, preserving most significant bit", function() {
+      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0x91);
+      mockMMU.expects('write8').once().withArgs(0x2C83, 0xC8);
+      ops[0xCB2E]();
+      mockMMU.verify();
+      expect(cpu.checkFlag('C')).to.equal(1);
+    });
+
+    it("takes 4 machine cycles", function() {
+      expect(ops[0xCB2E]()).to.equal(4);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      mockMMU.expects('read8').returns(0);
+      ops[0xCB2E]();
+      expect(cpu.checkFlag('Z')).to.equal(1);
+    });
+
+    it("resets N and H flags", function() {
+      cpu.setFlag('N');
+      cpu.setFlag('H');
+      ops[0xCB2E]();
+      expect(cpu.checkFlag('N')).to.equal(0);
+      expect(cpu.checkFlag('H')).to.equal(0);
+    });
+  });
+
+  [
+    { r: 'A', op: 0xCB3F },
+    { r: 'B', op: 0xCB38 },
+    { r: 'C', op: 0xCB39 },
+    { r: 'D', op: 0xCB3A },
+    { r: 'E', op: 0xCB3B },
+    { r: 'H', op: 0xCB3C },
+    { r: 'L', op: 0xCB3D }
+  ].forEach(function(test) {
+    describe("SRL " + test.r, function() {
+      it("shifts " + test.r + " right into carry flag", function() {
+        cpu.register[test.r] = 0x91;
+        ops[test.op]();
+        expect(cpu.register[test.r]).to.equal(0x48);
+        expect(cpu.checkFlag('C')).to.equal(1);
+      });
+
+      it("takes 2 machine cycles", function() {
+        expect(ops[test.op]()).to.equal(2);
+      });
+
+      it("sets Z flag if result is zero", function() {
+        cpu.register[test.r] = 0;
+        ops[test.op]();
+        expect(cpu.checkFlag('Z')).to.equal(1);
+      });
+
+      it("resets N and H flags", function() {
+        cpu.setFlag('N');
+        cpu.setFlag('H');
+        ops[test.op]();
+        expect(cpu.checkFlag('N')).to.equal(0);
+        expect(cpu.checkFlag('H')).to.equal(0);
+      });
+    });
+  });
+
+  describe("SRL (HL)", function() {
+    beforeEach(function() {
+      cpu.register.H = 0x2C;
+      cpu.register.L = 0x83;
+    });
+
+    it("shifts value at address HL right into carry flag", function() {
+      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0x91);
+      mockMMU.expects('write8').once().withArgs(0x2C83, 0x48);
+      ops[0xCB3E]();
+      mockMMU.verify();
+      expect(cpu.checkFlag('C')).to.equal(1);
+    });
+
+    it("takes 4 machine cycles", function() {
+      expect(ops[0xCB3E]()).to.equal(4);
+    });
+
+    it("sets Z flag if result is zero", function() {
+      mockMMU.expects('read8').returns(0);
+      ops[0xCB3E]();
+      expect(cpu.checkFlag('Z')).to.equal(1);
+    });
+
+    it("resets N and H flags", function() {
+      cpu.setFlag('N');
+      cpu.setFlag('H');
+      ops[0xCB3E]();
+      expect(cpu.checkFlag('N')).to.equal(0);
+      expect(cpu.checkFlag('H')).to.equal(0);
     });
   });
 });
