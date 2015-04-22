@@ -853,4 +853,104 @@ describe("Bitwise opcodes", function() {
       });
     });
   });
+
+  [
+    { b: 0, r: 'A', op: 0xCB87, value: 0x01 },
+    { b: 0, r: 'B', op: 0xCB80, value: 0x01 },
+    { b: 0, r: 'C', op: 0xCB81, value: 0x01 },
+    { b: 0, r: 'D', op: 0xCB82, value: 0x01 },
+    { b: 0, r: 'E', op: 0xCB83, value: 0x01 },
+    { b: 0, r: 'H', op: 0xCB84, value: 0x01 },
+    { b: 0, r: 'L', op: 0xCB85, value: 0x01 },
+    { b: 1, r: 'A', op: 0xCB8F, value: 0x02 },
+    { b: 1, r: 'B', op: 0xCB88, value: 0x02 },
+    { b: 1, r: 'C', op: 0xCB89, value: 0x02 },
+    { b: 1, r: 'D', op: 0xCB8A, value: 0x02 },
+    { b: 1, r: 'E', op: 0xCB8B, value: 0x02 },
+    { b: 1, r: 'H', op: 0xCB8C, value: 0x02 },
+    { b: 1, r: 'L', op: 0xCB8D, value: 0x02 },
+    { b: 2, r: 'A', op: 0xCB97, value: 0x04 },
+    { b: 2, r: 'B', op: 0xCB90, value: 0x04 },
+    { b: 2, r: 'C', op: 0xCB91, value: 0x04 },
+    { b: 2, r: 'D', op: 0xCB92, value: 0x04 },
+    { b: 2, r: 'E', op: 0xCB93, value: 0x04 },
+    { b: 2, r: 'H', op: 0xCB94, value: 0x04 },
+    { b: 2, r: 'L', op: 0xCB95, value: 0x04 },
+    { b: 3, r: 'A', op: 0xCB9F, value: 0x08 },
+    { b: 3, r: 'B', op: 0xCB98, value: 0x08 },
+    { b: 3, r: 'C', op: 0xCB99, value: 0x08 },
+    { b: 3, r: 'D', op: 0xCB9A, value: 0x08 },
+    { b: 3, r: 'E', op: 0xCB9B, value: 0x08 },
+    { b: 3, r: 'H', op: 0xCB9C, value: 0x08 },
+    { b: 3, r: 'L', op: 0xCB9D, value: 0x08 },
+    { b: 4, r: 'A', op: 0xCBA7, value: 0x10 },
+    { b: 4, r: 'B', op: 0xCBA0, value: 0x10 },
+    { b: 4, r: 'C', op: 0xCBA1, value: 0x10 },
+    { b: 4, r: 'D', op: 0xCBA2, value: 0x10 },
+    { b: 4, r: 'E', op: 0xCBA3, value: 0x10 },
+    { b: 4, r: 'H', op: 0xCBA4, value: 0x10 },
+    { b: 4, r: 'L', op: 0xCBA5, value: 0x10 },
+    { b: 5, r: 'A', op: 0xCBAF, value: 0x20 },
+    { b: 5, r: 'B', op: 0xCBA8, value: 0x20 },
+    { b: 5, r: 'C', op: 0xCBA9, value: 0x20 },
+    { b: 5, r: 'D', op: 0xCBAA, value: 0x20 },
+    { b: 5, r: 'E', op: 0xCBAB, value: 0x20 },
+    { b: 5, r: 'H', op: 0xCBAC, value: 0x20 },
+    { b: 5, r: 'L', op: 0xCBAD, value: 0x20 },
+    { b: 6, r: 'A', op: 0xCBB7, value: 0x40 },
+    { b: 6, r: 'B', op: 0xCBB0, value: 0x40 },
+    { b: 6, r: 'C', op: 0xCBB1, value: 0x40 },
+    { b: 6, r: 'D', op: 0xCBB2, value: 0x40 },
+    { b: 6, r: 'E', op: 0xCBB3, value: 0x40 },
+    { b: 6, r: 'H', op: 0xCBB4, value: 0x40 },
+    { b: 6, r: 'L', op: 0xCBB5, value: 0x40 },
+    { b: 7, r: 'A', op: 0xCBBF, value: 0x80 },
+    { b: 7, r: 'B', op: 0xCBB8, value: 0x80 },
+    { b: 7, r: 'C', op: 0xCBB9, value: 0x80 },
+    { b: 7, r: 'D', op: 0xCBBA, value: 0x80 },
+    { b: 7, r: 'E', op: 0xCBBB, value: 0x80 },
+    { b: 7, r: 'H', op: 0xCBBC, value: 0x80 },
+    { b: 7, r: 'L', op: 0xCBBD, value: 0x80 }
+  ].forEach(function(test) {
+    describe("RES " + test.b + "," + test.r, function() {
+      it("resets bit " + test.b + " of A", function() {
+        cpu.register[test.r] = test.value;
+        ops[test.op]();
+        expect(cpu.register[test.r]).to.equal(0);
+      });
+
+      it("takes 2 machine cycles", function() {
+        expect(ops[test.op]()).to.equal(2);
+      });
+    });
+  });
+
+  [
+    { b: 0, op: 0xCB86, value: 0x01 },
+    { b: 1, op: 0xCB8E, value: 0x02 },
+    { b: 2, op: 0xCB96, value: 0x04 },
+    { b: 3, op: 0xCB9E, value: 0x08 },
+    { b: 4, op: 0xCBA6, value: 0x10 },
+    { b: 5, op: 0xCBAE, value: 0x20 },
+    { b: 6, op: 0xCBB6, value: 0x40 },
+    { b: 7, op: 0xCBBE, value: 0x80 }
+  ].forEach(function(test) {
+    describe("RES " + test.b + ",(HL)", function() {
+      beforeEach(function() {
+        cpu.register.H = 0x2C;
+        cpu.register.L = 0x83;
+      });
+
+      it("sets bit " + test.b + " of value at address HL", function() {
+        mockMMU.expects('read8').once().withArgs(0x2C83).returns(test.value);
+        mockMMU.expects('write8').once().withArgs(0x2C83, 0);
+        ops[test.op]();
+        mockMMU.verify();
+      });
+
+      it("takes 4 machine cycles", function() {
+        expect(ops[test.op]()).to.equal(4);
+      });
+    });
+  });
 });
