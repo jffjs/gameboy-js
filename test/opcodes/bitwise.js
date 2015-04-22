@@ -6,7 +6,7 @@ var CPU = require('../../lib/cpu');
 var MMU = require('../../lib/mmu');
 var bitwise = require('../../lib/opcodes/bitwise');
 
-describe.only("Bitwise opcodes", function() {
+describe("Bitwise opcodes", function() {
   var cpu, mockMMU, ops;
 
   beforeEach(function() {
@@ -727,6 +727,7 @@ describe.only("Bitwise opcodes", function() {
         mockMMU.expects('read8').once().withArgs(0x2C83).returns(test.value);
         cpu.setFlag('Z');
         ops[test.op]();
+        mockMMU.verify();
         expect(cpu.checkFlag('Z')).to.equal(0);
       });
 
@@ -745,6 +746,106 @@ describe.only("Bitwise opcodes", function() {
       it("resets N flag", function() {
         ops[test.op]();
         expect(cpu.checkFlag('N')).to.equal(0);
+      });
+
+      it("takes 4 machine cycles", function() {
+        expect(ops[test.op]()).to.equal(4);
+      });
+    });
+  });
+
+  [
+    { b: 0, r: 'A', op: 0xCBC7, value: 0x01 },
+    { b: 0, r: 'B', op: 0xCBC0, value: 0x01 },
+    { b: 0, r: 'C', op: 0xCBC1, value: 0x01 },
+    { b: 0, r: 'D', op: 0xCBC2, value: 0x01 },
+    { b: 0, r: 'E', op: 0xCBC3, value: 0x01 },
+    { b: 0, r: 'H', op: 0xCBC4, value: 0x01 },
+    { b: 0, r: 'L', op: 0xCBC5, value: 0x01 },
+    { b: 1, r: 'A', op: 0xCBCF, value: 0x02 },
+    { b: 1, r: 'B', op: 0xCBC8, value: 0x02 },
+    { b: 1, r: 'C', op: 0xCBC9, value: 0x02 },
+    { b: 1, r: 'D', op: 0xCBCA, value: 0x02 },
+    { b: 1, r: 'E', op: 0xCBCB, value: 0x02 },
+    { b: 1, r: 'H', op: 0xCBCC, value: 0x02 },
+    { b: 1, r: 'L', op: 0xCBCD, value: 0x02 },
+    { b: 2, r: 'A', op: 0xCBD7, value: 0x04 },
+    { b: 2, r: 'B', op: 0xCBD0, value: 0x04 },
+    { b: 2, r: 'C', op: 0xCBD1, value: 0x04 },
+    { b: 2, r: 'D', op: 0xCBD2, value: 0x04 },
+    { b: 2, r: 'E', op: 0xCBD3, value: 0x04 },
+    { b: 2, r: 'H', op: 0xCBD4, value: 0x04 },
+    { b: 2, r: 'L', op: 0xCBD5, value: 0x04 },
+    { b: 3, r: 'A', op: 0xCBDF, value: 0x08 },
+    { b: 3, r: 'B', op: 0xCBD8, value: 0x08 },
+    { b: 3, r: 'C', op: 0xCBD9, value: 0x08 },
+    { b: 3, r: 'D', op: 0xCBDA, value: 0x08 },
+    { b: 3, r: 'E', op: 0xCBDB, value: 0x08 },
+    { b: 3, r: 'H', op: 0xCBDC, value: 0x08 },
+    { b: 3, r: 'L', op: 0xCBDD, value: 0x08 },
+    { b: 4, r: 'A', op: 0xCBE7, value: 0x10 },
+    { b: 4, r: 'B', op: 0xCBE0, value: 0x10 },
+    { b: 4, r: 'C', op: 0xCBE1, value: 0x10 },
+    { b: 4, r: 'D', op: 0xCBE2, value: 0x10 },
+    { b: 4, r: 'E', op: 0xCBE3, value: 0x10 },
+    { b: 4, r: 'H', op: 0xCBE4, value: 0x10 },
+    { b: 4, r: 'L', op: 0xCBE5, value: 0x10 },
+    { b: 5, r: 'A', op: 0xCBEF, value: 0x20 },
+    { b: 5, r: 'B', op: 0xCBE8, value: 0x20 },
+    { b: 5, r: 'C', op: 0xCBE9, value: 0x20 },
+    { b: 5, r: 'D', op: 0xCBEA, value: 0x20 },
+    { b: 5, r: 'E', op: 0xCBEB, value: 0x20 },
+    { b: 5, r: 'H', op: 0xCBEC, value: 0x20 },
+    { b: 5, r: 'L', op: 0xCBED, value: 0x20 },
+    { b: 6, r: 'A', op: 0xCBF7, value: 0x40 },
+    { b: 6, r: 'B', op: 0xCBF0, value: 0x40 },
+    { b: 6, r: 'C', op: 0xCBF1, value: 0x40 },
+    { b: 6, r: 'D', op: 0xCBF2, value: 0x40 },
+    { b: 6, r: 'E', op: 0xCBF3, value: 0x40 },
+    { b: 6, r: 'H', op: 0xCBF4, value: 0x40 },
+    { b: 6, r: 'L', op: 0xCBF5, value: 0x40 },
+    { b: 7, r: 'A', op: 0xCBFF, value: 0x80 },
+    { b: 7, r: 'B', op: 0xCBF8, value: 0x80 },
+    { b: 7, r: 'C', op: 0xCBF9, value: 0x80 },
+    { b: 7, r: 'D', op: 0xCBFA, value: 0x80 },
+    { b: 7, r: 'E', op: 0xCBFB, value: 0x80 },
+    { b: 7, r: 'H', op: 0xCBFC, value: 0x80 },
+    { b: 7, r: 'L', op: 0xCBFD, value: 0x80 }
+  ].forEach(function(test) {
+    describe("SET " + test.b + "," + test.r, function() {
+      it("sets bit " + test.b + " of A", function() {
+        cpu.register[test.r] = 0;
+        ops[test.op]();
+        expect(cpu.register[test.r]).to.equal(test.value);
+      });
+
+      it("takes 2 machine cycles", function() {
+        expect(ops[test.op]()).to.equal(2);
+      });
+    });
+  });
+
+  [
+    { b: 0, op: 0xCBC6, value: 0x01 },
+    { b: 1, op: 0xCBCE, value: 0x02 },
+    { b: 2, op: 0xCBD6, value: 0x04 },
+    { b: 3, op: 0xCBDE, value: 0x08 },
+    { b: 4, op: 0xCBE6, value: 0x10 },
+    { b: 5, op: 0xCBEE, value: 0x20 },
+    { b: 6, op: 0xCBF6, value: 0x40 },
+    { b: 7, op: 0xCBFE, value: 0x80 }
+  ].forEach(function(test) {
+    describe("SET " + test.b + ",(HL)", function() {
+      beforeEach(function() {
+        cpu.register.H = 0x2C;
+        cpu.register.L = 0x83;
+      });
+
+      it("sets bit " + test.b + " of value at address HL", function() {
+        mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
+        mockMMU.expects('write8').once().withArgs(0x2C83, test.value);
+        ops[test.op]();
+        mockMMU.verify();
       });
 
       it("takes 4 machine cycles", function() {
