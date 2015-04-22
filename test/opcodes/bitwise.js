@@ -6,7 +6,7 @@ var CPU = require('../../lib/cpu');
 var MMU = require('../../lib/mmu');
 var bitwise = require('../../lib/opcodes/bitwise');
 
-describe("Bitwise opcodes", function() {
+describe.only("Bitwise opcodes", function() {
   var cpu, mockMMU, ops;
 
   beforeEach(function() {
@@ -632,7 +632,49 @@ describe("Bitwise opcodes", function() {
     { b: 1, r: 'D', op: 0xCB4A, value: 0x42 },
     { b: 1, r: 'E', op: 0xCB4B, value: 0x42 },
     { b: 1, r: 'H', op: 0xCB4C, value: 0x42 },
-    { b: 1, r: 'L', op: 0xCB4D, value: 0x42 }
+    { b: 1, r: 'L', op: 0xCB4D, value: 0x42 },
+    { b: 2, r: 'A', op: 0xCB57, value: 0x44 },
+    { b: 2, r: 'B', op: 0xCB50, value: 0x44 },
+    { b: 2, r: 'C', op: 0xCB51, value: 0x44 },
+    { b: 2, r: 'D', op: 0xCB52, value: 0x44 },
+    { b: 2, r: 'E', op: 0xCB53, value: 0x44 },
+    { b: 2, r: 'H', op: 0xCB54, value: 0x44 },
+    { b: 2, r: 'L', op: 0xCB55, value: 0x44 },
+    { b: 3, r: 'A', op: 0xCB5F, value: 0x48 },
+    { b: 3, r: 'B', op: 0xCB58, value: 0x48 },
+    { b: 3, r: 'C', op: 0xCB59, value: 0x48 },
+    { b: 3, r: 'D', op: 0xCB5A, value: 0x48 },
+    { b: 3, r: 'E', op: 0xCB5B, value: 0x48 },
+    { b: 3, r: 'H', op: 0xCB5C, value: 0x48 },
+    { b: 3, r: 'L', op: 0xCB5D, value: 0x48 },
+    { b: 4, r: 'A', op: 0xCB67, value: 0x14 },
+    { b: 4, r: 'B', op: 0xCB60, value: 0x14 },
+    { b: 4, r: 'C', op: 0xCB61, value: 0x14 },
+    { b: 4, r: 'D', op: 0xCB62, value: 0x14 },
+    { b: 4, r: 'E', op: 0xCB63, value: 0x14 },
+    { b: 4, r: 'H', op: 0xCB64, value: 0x14 },
+    { b: 4, r: 'L', op: 0xCB65, value: 0x14 },
+    { b: 5, r: 'A', op: 0xCB6F, value: 0x28 },
+    { b: 5, r: 'B', op: 0xCB68, value: 0x28 },
+    { b: 5, r: 'C', op: 0xCB69, value: 0x28 },
+    { b: 5, r: 'D', op: 0xCB6A, value: 0x28 },
+    { b: 5, r: 'E', op: 0xCB6B, value: 0x28 },
+    { b: 5, r: 'H', op: 0xCB6C, value: 0x28 },
+    { b: 5, r: 'L', op: 0xCB6D, value: 0x28 },
+    { b: 6, r: 'A', op: 0xCB77, value: 0x44 },
+    { b: 6, r: 'B', op: 0xCB70, value: 0x44 },
+    { b: 6, r: 'C', op: 0xCB71, value: 0x44 },
+    { b: 6, r: 'D', op: 0xCB72, value: 0x44 },
+    { b: 6, r: 'E', op: 0xCB73, value: 0x44 },
+    { b: 6, r: 'H', op: 0xCB74, value: 0x44 },
+    { b: 6, r: 'L', op: 0xCB75, value: 0x44 },
+    { b: 7, r: 'A', op: 0xCB7F, value: 0x88 },
+    { b: 7, r: 'B', op: 0xCB78, value: 0x88 },
+    { b: 7, r: 'C', op: 0xCB79, value: 0x88 },
+    { b: 7, r: 'D', op: 0xCB7A, value: 0x88 },
+    { b: 7, r: 'E', op: 0xCB7B, value: 0x88 },
+    { b: 7, r: 'H', op: 0xCB7C, value: 0x88 },
+    { b: 7, r: 'L', op: 0xCB7D, value: 0x88 }
   ].forEach(function(test) {
     describe("BIT " + test.b + "," + test.r, function() {
       it("resets Z flag if bit " + test.b + " of " + test.r + " is 1", function() {
@@ -667,7 +709,13 @@ describe("Bitwise opcodes", function() {
 
   [
     { b: 0, op: 0xCB46, value: 0x41 },
-    { b: 1, op: 0xCB4E, value: 0x42 }
+    { b: 1, op: 0xCB4E, value: 0x42 },
+    { b: 2, op: 0xCB56, value: 0x44 },
+    { b: 3, op: 0xCB5E, value: 0x48 },
+    { b: 4, op: 0xCB66, value: 0x14 },
+    { b: 5, op: 0xCB6E, value: 0x28 },
+    { b: 6, op: 0xCB76, value: 0x44 },
+    { b: 7, op: 0xCB7E, value: 0x88 }
   ].forEach(function(test) {
     describe("BIT " + test.b + ",(HL)", function() {
       beforeEach(function() {
