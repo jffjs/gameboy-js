@@ -617,4 +617,91 @@ describe("Bitwise opcodes", function() {
       expect(cpu.checkFlag('H')).to.equal(0);
     });
   });
+
+  [
+    { b: 0, r: 'A', op: 0xCB47, value: 0x41 },
+    { b: 0, r: 'B', op: 0xCB40, value: 0x41 },
+    { b: 0, r: 'C', op: 0xCB41, value: 0x41 },
+    { b: 0, r: 'D', op: 0xCB42, value: 0x41 },
+    { b: 0, r: 'E', op: 0xCB43, value: 0x41 },
+    { b: 0, r: 'H', op: 0xCB44, value: 0x41 },
+    { b: 0, r: 'L', op: 0xCB45, value: 0x41 },
+    { b: 1, r: 'A', op: 0xCB4F, value: 0x42 },
+    { b: 1, r: 'B', op: 0xCB48, value: 0x42 },
+    { b: 1, r: 'C', op: 0xCB49, value: 0x42 },
+    { b: 1, r: 'D', op: 0xCB4A, value: 0x42 },
+    { b: 1, r: 'E', op: 0xCB4B, value: 0x42 },
+    { b: 1, r: 'H', op: 0xCB4C, value: 0x42 },
+    { b: 1, r: 'L', op: 0xCB4D, value: 0x42 }
+  ].forEach(function(test) {
+    describe("BIT " + test.b + "," + test.r, function() {
+      it("resets Z flag if bit " + test.b + " of " + test.r + " is 1", function() {
+        cpu.setFlag('Z');
+        cpu.register[test.r] = test.value;
+        ops[test.op]();
+        expect(cpu.checkFlag('Z')).to.equal(0);
+      });
+
+      it("sets Z flag if bit " + test.b + " is 0", function() {
+        cpu.resetFlag('Z');
+        cpu.register[test.r] = test.value >> 1;
+        ops[test.op]();
+        expect(cpu.checkFlag('Z')).to.equal(1);
+      });
+
+      it("sets H flag", function() {
+        ops[test.op]();
+        expect(cpu.checkFlag('Z')).to.equal(1);
+      });
+
+      it("resets N flag", function() {
+        ops[test.op]();
+        expect(cpu.checkFlag('N')).to.equal(0);
+      });
+
+      it("takes 2 machine cycles", function() {
+        expect(ops[test.op]()).to.equal(2);
+      });
+    });
+  });
+
+  [
+    { b: 0, op: 0xCB46, value: 0x41 },
+    { b: 1, op: 0xCB4E, value: 0x42 }
+  ].forEach(function(test) {
+    describe("BIT " + test.b + ",(HL)", function() {
+      beforeEach(function() {
+        cpu.register.H = 0x2C;
+        cpu.register.L = 0x83;
+      });
+
+      it("resets Z flag if bit " + test.b + " of value at address HL is 1", function() {
+        mockMMU.expects('read8').once().withArgs(0x2C83).returns(test.value);
+        cpu.setFlag('Z');
+        ops[test.op]();
+        expect(cpu.checkFlag('Z')).to.equal(0);
+      });
+
+      it("sets Z flag if bit " + test.b + " is 0", function() {
+        mockMMU.expects('read8').once().withArgs(0x2C83).returns(test.value >> 1);
+        cpu.resetFlag('Z');
+        ops[test.op]();
+        expect(cpu.checkFlag('Z')).to.equal(1);
+      });
+
+      it("sets H flag", function() {
+        ops[test.op]();
+        expect(cpu.checkFlag('Z')).to.equal(1);
+      });
+
+      it("resets N flag", function() {
+        ops[test.op]();
+        expect(cpu.checkFlag('N')).to.equal(0);
+      });
+
+      it("takes 4 machine cycles", function() {
+        expect(ops[test.op]()).to.equal(4);
+      });
+    });
+  });
 });
