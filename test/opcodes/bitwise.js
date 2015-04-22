@@ -477,4 +477,41 @@ describe("Bitwise opcodes", function() {
       expect(cpu.checkFlag('H')).to.equal(0);
     });
   });
+
+  [
+    { r: 'A', op: 0xCB2F },
+    { r: 'B', op: 0xCB28 },
+    { r: 'C', op: 0xCB29 },
+    { r: 'D', op: 0xCB2A },
+    { r: 'E', op: 0xCB2B },
+    { r: 'H', op: 0xCB2C },
+    { r: 'L', op: 0xCB2D }
+  ].forEach(function(test) {
+    describe("SRA " + test.r, function() {
+      it("shifts " + test.r + " left into carry flag", function() {
+        cpu.register[test.r] = 0x91;
+        ops[test.op]();
+        expect(cpu.register[test.r]).to.equal(0xC8);
+        expect(cpu.checkFlag('C')).to.equal(1);
+      });
+
+      it("takes 2 machine cycles", function() {
+        expect(ops[test.op]()).to.equal(2);
+      });
+
+      it("sets Z flag if result is zero", function() {
+        cpu.register[test.r] = 0;
+        ops[test.op]();
+        expect(cpu.checkFlag('Z')).to.equal(1);
+      });
+
+      it("resets N and H flags", function() {
+        cpu.setFlag('N');
+        cpu.setFlag('H');
+        ops[test.op]();
+        expect(cpu.checkFlag('N')).to.equal(0);
+        expect(cpu.checkFlag('H')).to.equal(0);
+      });
+    });
+  });
 });
