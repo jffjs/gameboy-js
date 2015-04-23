@@ -23,15 +23,103 @@ describe("Jump opcodes", function() {
       ops[0xC3]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x34AB);
-    });
-
-    it("does not increment program counter", function() {
-      ops[0xC3]();
       expect(cpu.incrementPC).to.be.false;
     });
 
     it("takes 3 machine cycles", function() {
       expect(ops[0xC3]()).to.equal(3);
+    });
+  });
+
+  describe("JP NZ,nn", function() {
+    it("jumps to 16-bit immediate value nn if Z flag is 0", function() {
+      cpu.resetFlag('Z');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      ops[0xC2]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0x34AB);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not jump if Z flag is 1", function() {
+      cpu.setFlag('Z');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      ops[0xC2]();
+      expect(cpu.pc).to.equal(0x200);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 3 machine cycles", function() {
+      expect(ops[0xC2]()).to.equal(3);
+    });
+  });
+
+  describe("JP Z,nn", function() {
+    it("jumps to 16-bit immediate value nn if Z flag is 1", function() {
+      cpu.setFlag('Z');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      ops[0xCA]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0x34AB);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not jump if Z flag is 0", function() {
+      cpu.resetFlag('Z');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      ops[0xCA]();
+      expect(cpu.pc).to.equal(0x200);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 3 machine cycles", function() {
+      expect(ops[0xCA]()).to.equal(3);
+    });
+  });
+  
+  describe("JP NC,nn", function() {
+    it("jumps to 16-bit immediate value nn if C flag is 0", function() {
+      cpu.resetFlag('C');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      ops[0xD2]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0x34AB);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not jump if C flag is 1", function() {
+      cpu.setFlag('C');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      ops[0xD2]();
+      expect(cpu.pc).to.equal(0x200);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 3 machine cycles", function() {
+      expect(ops[0xD2]()).to.equal(3);
+    });
+  });
+
+  describe("JP C,nn", function() {
+    it("jumps to 16-bit immediate value nn if C flag is 1", function() {
+      cpu.setFlag('C');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      ops[0xDA]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0x34AB);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not jump if C flag is 0", function() {
+      cpu.resetFlag('C');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      ops[0xDA]();
+      expect(cpu.pc).to.equal(0x200);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 3 machine cycles", function() {
+      expect(ops[0xDA]()).to.equal(3);
     });
   });
 });
