@@ -309,4 +309,120 @@ describe("Jump opcodes", function() {
       expect(ops[0xCD]()).to.equal(3);
     });
   });
+
+  describe("CALL NZ,nn", function() {
+    beforeEach(function() {
+      cpu.sp = 0xFFF0;
+    });
+
+    it("pushes address of next instruction onto stack and jumps to 16-bit immediate address nn if Z flag is 0", function() {
+      cpu.resetFlag('Z');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0xABCD);
+      mockMMU.expects('write16').once().withArgs(0xFFEE, 0x203);
+      ops[0xC4]();
+      mockMMU.verify();
+      expect(cpu.sp).to.equal(0xFFEE);
+      expect(cpu.pc).to.equal(0xABCD);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not call if Z flag is 1", function() {
+      cpu.setFlag('Z');
+      ops[0xC4]();
+      expect(cpu.sp).to.equal(0xFFF0);
+      expect(cpu.pc).to.equal(0x202);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 3 machine cycles", function() {
+      expect(ops[0xC4]()).to.equal(3);
+    });
+  });
+
+  describe("CALL Z,nn", function() {
+    beforeEach(function() {
+      cpu.sp = 0xFFF0;
+    });
+
+    it("pushes address of next instruction onto stack and jumps to 16-bit immediate address nn if Z flag is 1", function() {
+      cpu.setFlag('Z');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0xABCD);
+      mockMMU.expects('write16').once().withArgs(0xFFEE, 0x203);
+      ops[0xCC]();
+      mockMMU.verify();
+      expect(cpu.sp).to.equal(0xFFEE);
+      expect(cpu.pc).to.equal(0xABCD);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not call if Z flag is 0", function() {
+      cpu.resetFlag('Z');
+      ops[0xCC]();
+      expect(cpu.sp).to.equal(0xFFF0);
+      expect(cpu.pc).to.equal(0x202);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 3 machine cycles", function() {
+      expect(ops[0xCC]()).to.equal(3);
+    });
+  });
+
+  describe("CALL NC,nn", function() {
+    beforeEach(function() {
+      cpu.sp = 0xFFF0;
+    });
+
+    it("pushes address of next instruction onto stack and jumps to 16-bit immediate address nn if C flag is 0", function() {
+      cpu.resetFlag('C');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0xABCD);
+      mockMMU.expects('write16').once().withArgs(0xFFEE, 0x203);
+      ops[0xD4]();
+      mockMMU.verify();
+      expect(cpu.sp).to.equal(0xFFEE);
+      expect(cpu.pc).to.equal(0xABCD);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not call if C flag is 1", function() {
+      cpu.setFlag('C');
+      ops[0xD4]();
+      expect(cpu.sp).to.equal(0xFFF0);
+      expect(cpu.pc).to.equal(0x202);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 3 machine cycles", function() {
+      expect(ops[0xD4]()).to.equal(3);
+    });
+  });
+
+  describe("CALL C,nn", function() {
+    beforeEach(function() {
+      cpu.sp = 0xFFF0;
+    });
+
+    it("pushes address of next instruction onto stack and jumps to 16-bit immediate address nn if C flag is 1", function() {
+      cpu.setFlag('C');
+      mockMMU.expects('read16').once().withArgs(0x202).returns(0xABCD);
+      mockMMU.expects('write16').once().withArgs(0xFFEE, 0x203);
+      ops[0xDC]();
+      mockMMU.verify();
+      expect(cpu.sp).to.equal(0xFFEE);
+      expect(cpu.pc).to.equal(0xABCD);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not call if C flag is 0", function() {
+      cpu.resetFlag('C');
+      ops[0xDC]();
+      expect(cpu.sp).to.equal(0xFFF0);
+      expect(cpu.pc).to.equal(0x202);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 3 machine cycles", function() {
+      expect(ops[0xDC]()).to.equal(3);
+    });
+  });
 });
