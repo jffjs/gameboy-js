@@ -4,8 +4,8 @@
   "description": "A Gameboy emulator",
   "main": "index.js",
   "scripts": {
-    "karma": "./node_modules/karma/bin/karma start",
-    "test": "./node_modules/.bin/mocha test/**"
+    "test": "./node_modules/.bin/mocha test/**",
+    "testw": "./node_modules/.bin/mocha test/** --watch"
   },
   "repository": {
     "type": "git",
@@ -25,11 +25,6 @@
   "devDependencies": {
     "beefy": "^2.1.3",
     "chai": "^2.2.0",
-    "karma": "^0.12.31",
-    "karma-browserify": "^4.0.0",
-    "karma-chrome-launcher": "^0.1.7",
-    "karma-mocha": "^0.1.10",
-    "karma-phantomjs-launcher": "^0.1.4",
     "mocha": "^2.2.4",
     "sinon": "^1.14.1",
     "watchify": "^2.6.2"
