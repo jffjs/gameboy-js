@@ -425,4 +425,168 @@ describe("Jump opcodes", function() {
       expect(ops[0xDC]()).to.equal(3);
     });
   });
+
+  [
+    { p: 0x00, op: 0xC7 },
+    { p: 0x08, op: 0xCF },
+    { p: 0x10, op: 0xD7 },
+    { p: 0x18, op: 0xDF },
+    { p: 0x20, op: 0xE7 },
+    { p: 0x28, op: 0xEF },
+    { p: 0x30, op: 0xF7 },
+    { p: 0x38, op: 0xFF }
+  ].forEach(function(test) {
+    describe("RST " + test.p.toString(16) + "h", function() {
+      it("pushes current address onto stack and jumps to 0x00" + test.p.toString(16), function() {
+        mockMMU.expects('write16').once().withArgs(0xFFEE, 0x201);
+        cpu.sp = 0xFFF0;
+        ops[test.op]();
+        mockMMU.verify();
+        expect(cpu.pc).to.equal(test.p);
+        expect(cpu.incrementPC).to.be.false;
+      });
+
+      it("takes 8 machine cycles", function() {
+        expect(ops[test.op]()).to.equal(8);
+      });
+    });
+  });
+
+  describe("RET", function() {
+    it("pops two bytes from stack and jumps to that address", function() {
+      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      cpu.sp = 0xFFEE;
+      ops[0xC9]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0xABCD);
+      expect(cpu.sp).to.equal(0xFFF0);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xC9]()).to.equal(2);
+    });
+  });
+
+  describe("RET NZ", function() {
+    it("pops two bytes from stack and jumps to that address if Z flag is 0", function() {
+      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      cpu.resetFlag('Z');
+      cpu.sp = 0xFFEE;
+      ops[0xC0]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0xABCD);
+      expect(cpu.sp).to.equal(0xFFF0);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not return if Z flag is 1", function() {
+      cpu.sp = 0xFFEE;
+      cpu.setFlag('Z');
+      ops[0xC0]();
+      expect(cpu.pc).to.equal(0x200);
+      expect(cpu.sp).to.equal(0xFFEE);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xC0]()).to.equal(2);
+    });
+  });
+
+  describe("RET Z", function() {
+    it("pops two bytes from stack and jumps to that address if Z flag is 1", function() {
+      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      cpu.setFlag('Z');
+      cpu.sp = 0xFFEE;
+      ops[0xC8]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0xABCD);
+      expect(cpu.sp).to.equal(0xFFF0);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not return if Z flag is 0", function() {
+      cpu.sp = 0xFFEE;
+      cpu.resetFlag('Z');
+      ops[0xC8]();
+      expect(cpu.pc).to.equal(0x200);
+      expect(cpu.sp).to.equal(0xFFEE);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xC8]()).to.equal(2);
+    });
+  });
+
+  describe("RET NC", function() {
+    it("pops two bytes from stack and jumps to that address if C flag is 0", function() {
+      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      cpu.resetFlag('C');
+      cpu.sp = 0xFFEE;
+      ops[0xD0]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0xABCD);
+      expect(cpu.sp).to.equal(0xFFF0);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not return if C flag is 1", function() {
+      cpu.sp = 0xFFEE;
+      cpu.setFlag('C');
+      ops[0xD0]();
+      expect(cpu.pc).to.equal(0x200);
+      expect(cpu.sp).to.equal(0xFFEE);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xD0]()).to.equal(2);
+    });
+  });
+
+  describe("RET C", function() {
+    it("pops two bytes from stack and jumps to that address if C flag is 1", function() {
+      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      cpu.setFlag('C');
+      cpu.sp = 0xFFEE;
+      ops[0xD8]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0xABCD);
+      expect(cpu.sp).to.equal(0xFFF0);
+      expect(cpu.incrementPC).to.be.false;
+    });
+
+    it("does not return if C flag is 0", function() {
+      cpu.sp = 0xFFEE;
+      cpu.resetFlag('C');
+      ops[0xD8]();
+      expect(cpu.pc).to.equal(0x200);
+      expect(cpu.sp).to.equal(0xFFEE);
+      expect(cpu.incrementPC).to.be.true;
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xD8]()).to.equal(2);
+    });
+  });
+
+  describe("RETI", function() {
+    it("returns and enables interrupts", function() {
+      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      cpu.setFlag('C');
+      cpu.sp = 0xFFEE;
+      ops[0xD9]();
+      mockMMU.verify();
+      expect(cpu.pc).to.equal(0xABCD);
+      expect(cpu.sp).to.equal(0xFFF0);
+      expect(cpu.incrementPC).to.be.false;
+      expect(cpu.enableInterrupts).to.be.true;
+    });
+
+    it("takes 2 machine cycles", function() {
+      expect(ops[0xD9]()).to.equal(2);
+    });
+  });
 });
