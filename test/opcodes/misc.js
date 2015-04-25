@@ -40,7 +40,7 @@ describe("Misc opcodes", function() {
       it("sets Z flag if result is zero", function() {
         cpu.register[test.r] = 0x00;
         ops[test.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N, H, and C flags", function() {
@@ -49,9 +49,9 @@ describe("Misc opcodes", function() {
         cpu.setFlag('C');
         cpu.register[test.r] = 0x15;
         ops[test.op]();
-        expect(cpu.flag.N()).to.equal(0);
-        expect(cpu.flag.H()).to.equal(0);
-        expect(cpu.flag.C()).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
+        expect(cpu.testFlag('C')).to.equal(0);
       });
     });
   });
@@ -76,7 +76,7 @@ describe("Misc opcodes", function() {
     it("sets Z flag if result is zero", function() {
       mockMMU.expects('read8').returns(0x00);
       ops[0xCB36]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N, H, and C flags", function() {
@@ -85,9 +85,9 @@ describe("Misc opcodes", function() {
       cpu.setFlag('H');
       cpu.setFlag('C');
       ops[0xCB36]();
-      expect(cpu.flag.N()).to.equal(0);
-      expect(cpu.flag.H()).to.equal(0);
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -122,8 +122,8 @@ describe("Misc opcodes", function() {
         cpu.register.A = test.A1;
         ops[0x27]();
         expect(cpu.register.A).to.equal(test.A2);
-        expect(cpu.flag.C()).to.equal(test.C2);
-        expect(cpu.flag.Z()).to.equal(test.Z);
+        expect(cpu.testFlag('C')).to.equal(test.C2);
+        expect(cpu.testFlag('Z')).to.equal(test.Z);
       });
 
       it("takes 1 machine cycle", function() {
@@ -141,8 +141,8 @@ describe("Misc opcodes", function() {
 
     it("sets N and H flags", function() {
       ops[0x2F]();
-      expect(cpu.flag.N()).to.equal(1);
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("takes 1 machine cycle", function() {
@@ -154,15 +154,15 @@ describe("Misc opcodes", function() {
     it("complements carry flag", function() {
       cpu.setFlag('C');
       ops[0x3F]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
       ops[0x3F]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       ops[0x3F]();
-      expect(cpu.flag.N()).to.equal(0);
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("takes 1 machine cycle", function() {
@@ -173,13 +173,13 @@ describe("Misc opcodes", function() {
   describe("SCF", function() {
     it("sets carry flag", function() {
       ops[0x37]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       ops[0x37]();
-      expect(cpu.flag.N()).to.equal(0);
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("takes 1 machine cycle", function() {

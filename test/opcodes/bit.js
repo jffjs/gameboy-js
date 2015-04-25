@@ -80,24 +80,24 @@ describe("Bit opcodes", function() {
         cpu.setFlag('Z');
         cpu.register[test.r] = test.value;
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(0);
+        expect(cpu.testFlag('Z')).to.equal(0);
       });
 
       it("sets Z flag if bit " + test.b + " is 0", function() {
         cpu.resetFlag('Z');
         cpu.register[test.r] = test.value >> 1;
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("sets H flag", function() {
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N flag", function() {
         ops[test.op]();
-        expect(cpu.checkFlag('N')).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
       });
 
       it("takes 2 machine cycles", function() {
@@ -127,24 +127,24 @@ describe("Bit opcodes", function() {
         cpu.setFlag('Z');
         ops[test.op]();
         mockMMU.verify();
-        expect(cpu.checkFlag('Z')).to.equal(0);
+        expect(cpu.testFlag('Z')).to.equal(0);
       });
 
       it("sets Z flag if bit " + test.b + " is 0", function() {
         mockMMU.expects('read8').once().withArgs(0x2C83).returns(test.value >> 1);
         cpu.resetFlag('Z');
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("sets H flag", function() {
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N flag", function() {
         ops[test.op]();
-        expect(cpu.checkFlag('N')).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
       });
 
       it("takes 4 machine cycles", function() {

@@ -31,25 +31,25 @@ describe("ALU opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0x0;
       ops[0x87]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       cpu.register.A = 0x2;
       ops[0x87]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag is carry from bit 3", function() {
       cpu.register.A = 0xE;
       ops[0x87]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 7", function() {
       cpu.register.A = 0x9F;
       ops[0x87]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
   });
 
@@ -77,28 +77,28 @@ describe("ALU opcodes", function() {
         cpu.register[i.r] = 0x0;
         cpu.register.A = 0x0;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N flag", function() {
         cpu.register[i.r] = 0x1;
         cpu.register.A = 0x2;
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
       });
 
       it("sets H flag is carry from bit 3", function() {
         cpu.register[i.r] = 0xF;
         cpu.register.A = 0x1;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(1);
+        expect(cpu.testFlag('H')).to.equal(1);
       });
 
       it("sets C flag if carry from bit 7", function() {
         cpu.register[i.r] = 0xFF;
         cpu.register.A = 0x1;
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
       });
     });
   });
@@ -125,21 +125,21 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0xFF;
       ops[0x86]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0x2;
       ops[0x86]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag is carry from bit 3", function() {
       mockMMU.expects('read8').returns(0x0F);
       cpu.register.A = 0x1;
       ops[0x86]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 7", function() {
@@ -168,28 +168,28 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0xFF;
       ops[0xC6]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0x2;
       ops[0xC6]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag is carry from bit 3", function() {
       mockMMU.expects('read8').returns(0x0F);
       cpu.register.A = 0x1;
       ops[0xC6]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 7", function() {
       mockMMU.expects('read8').returns(0xFF);
       cpu.register.A = 0x1;
       ops[0xC6]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
   });
 
@@ -209,25 +209,25 @@ describe("ALU opcodes", function() {
       cpu.resetFlag('C');
       cpu.register.A = 0x0;
       ops[0x8F]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       cpu.register.A = 0x2;
       ops[0x8F]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag is carry from bit 3", function() {
       cpu.register.A = 0xE;
       ops[0x8F]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 7", function() {
       cpu.register.A = 0x9F;
       ops[0x8F]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
   });
 
@@ -259,28 +259,28 @@ describe("ALU opcodes", function() {
         cpu.register[i.r] = 0xFF;
         cpu.register.A = 0x0;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N flag", function() {
         cpu.register[i.r] = 0x1;
         cpu.register.A = 0x2;
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
       });
 
       it("sets H flag is carry from bit 3", function() {
         cpu.register[i.r] = 0xF;
         cpu.register.A = 0x0;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(1);
+        expect(cpu.testFlag('H')).to.equal(1);
       });
 
       it("sets C flag if carry from bit 7", function() {
         cpu.register[i.r] = 0xFF;
         cpu.register.A = 0x0;
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
       });
     });
   });
@@ -308,21 +308,21 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0x00);
       cpu.register.A = 0xFF;
       ops[0x8E]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0x2;
       ops[0x8E]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag is carry from bit 3", function() {
       mockMMU.expects('read8').returns(0x0F);
       cpu.register.A = 0x0;
       ops[0x8E]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 7", function() {
@@ -355,28 +355,28 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0);
       cpu.register.A = 0xFF;
       ops[0xCE]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0x2;
       ops[0xCE]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag is carry from bit 3", function() {
       mockMMU.expects('read8').returns(0x0F);
       cpu.register.A = 0x0;
       ops[0xCE]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 7", function() {
       mockMMU.expects('read8').returns(0xFF);
       cpu.register.A = 0x0;
       ops[0xCE]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
   });
 
@@ -394,25 +394,25 @@ describe("ALU opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0x78;
       ops[0x97]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
       cpu.register.A = 0x78;
       ops[0x97]();
-      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
       cpu.register.A = 0x78;
       ops[0x97]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("sets C flag if borrow", function() {
       cpu.register.A = 0x10;
       ops[0x97]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -440,38 +440,38 @@ describe("ALU opcodes", function() {
         cpu.register.A = 0x78;
         cpu.register[i.r] = 0x78;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("sets N flag", function() {
         cpu.register.A = 0x78;
         cpu.register[i.r] = 0x43;
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(1);
+        expect(cpu.testFlag('N')).to.equal(1);
       });
 
       it("sets H flag if borrow from bit 4", function() {
         cpu.register.A = 0x82;
         cpu.register[i.r] = 0x73;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(1);
+        expect(cpu.testFlag('H')).to.equal(1);
 
         cpu.register.A = 0x73;
         cpu.register[i.r] = 0x42;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
 
       it("sets C flag if borrow", function() {
         cpu.register.A = 0x10;
         cpu.register[i.r] = 0x11;
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
 
         cpu.register.A = 0x11;
         cpu.register[i.r] = 0x10;
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(0);
+        expect(cpu.testFlag('C')).to.equal(0);
       });
     });
   });
@@ -498,36 +498,36 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0x01;
       ops[0x96]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0x2;
       ops[0x96]();
-      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
       mockMMU.expects('read8').twice().returns(0x08);
       cpu.register.A = 0x15;
       ops[0x96]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
 
       cpu.register.A = 0x19;
       ops[0x96]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("sets C flag if carry from bit 7", function() {
       mockMMU.expects('read8').twice().returns(0x08);
       cpu.register.A = 0x05;
       ops[0x96]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
 
       cpu.register.A = 0x09;
       ops[0x96]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -549,28 +549,28 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0xFF);
       cpu.register.A = 0xFF;
       ops[0xD6]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0x2;
       ops[0xD6]();
-      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
       mockMMU.expects('read8').returns(0x23);
       cpu.register.A = 0x31;
       ops[0xD6]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if borrow", function() {
       mockMMU.expects('read8').returns(0xFF);
       cpu.register.A = 0x01;
       ops[0xD6]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
   });
 
@@ -590,27 +590,27 @@ describe("ALU opcodes", function() {
       cpu.resetFlag('C');
       cpu.register.A = 0x78;
       ops[0x9F]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
       cpu.register.A = 0x78;
       ops[0x9F]();
-      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
       cpu.setFlag('C');
       cpu.register.A = 0x78;
       ops[0x9F]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if borrow", function() {
       cpu.setFlag('C');
       cpu.register.A = 0x10;
       ops[0x9F]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
   });
 
@@ -642,38 +642,38 @@ describe("ALU opcodes", function() {
         cpu.register.A = 0x79;
         cpu.register[i.r] = 0x78;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("sets N flag", function() {
         cpu.register.A = 0x78;
         cpu.register[i.r] = 0x43;
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(1);
+        expect(cpu.testFlag('N')).to.equal(1);
       });
 
       it("sets H flag if borrow from bit 4", function() {
         cpu.register.A = 0x82;
         cpu.register[i.r] = 0x72;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(1);
+        expect(cpu.testFlag('H')).to.equal(1);
 
         cpu.register.A = 0x73;
         cpu.register[i.r] = 0x42;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
 
       it("sets C flag if borrow", function() {
         cpu.register.A = 0x11;
         cpu.register[i.r] = 0x11;
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
 
         cpu.register.A = 0x12;
         cpu.register[i.r] = 0x10;
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(0);
+        expect(cpu.testFlag('C')).to.equal(0);
       });
     });
   });
@@ -701,36 +701,36 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0x02;
       ops[0x9E]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0x2;
       ops[0x9E]();
-      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
       mockMMU.expects('read8').twice().returns(0x05);
       cpu.register.A = 0x15;
       ops[0x9E]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
 
       cpu.register.A = 0x19;
       ops[0x9E]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("sets C flag if carry from bit 7", function() {
       mockMMU.expects('read8').twice().returns(0x05);
       cpu.register.A = 0x05;
       ops[0x9E]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
 
       cpu.register.A = 0x09;
       ops[0x9E]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -756,28 +756,28 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0xFE);
       cpu.register.A = 0xFF;
       ops[0xDE]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
       mockMMU.expects('read8').returns(0x01);
       cpu.register.A = 0x2;
       ops[0xDE]();
-      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
       mockMMU.expects('read8').returns(0x21);
       cpu.register.A = 0x31;
       ops[0xDE]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if borrow", function() {
       mockMMU.expects('read8').returns(0xF0);
       cpu.register.A = 0x01;
       ops[0xDE]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
   });
 
@@ -795,25 +795,25 @@ describe("ALU opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0x00;
       ops[0xA7]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       cpu.register.A = 0xF2;
       ops[0xA7]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag", function() {
       cpu.register.A = 0xF2;
       ops[0xA7]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("resets C flag", function() {
       cpu.register.A = 0xF2;
       ops[0xA7]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -841,28 +841,28 @@ describe("ALU opcodes", function() {
         cpu.register.A = 0x00;
         cpu.register[i.r] = 0x34;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N flag", function() {
         cpu.register.A = 0xF2;
         cpu.register[i.r] = 0x34;
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
       });
 
       it("sets H flag", function() {
         cpu.register.A = 0xF2;
         cpu.register[i.r] = 0x34;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(1);
+        expect(cpu.testFlag('H')).to.equal(1);
       });
 
       it("resets C flag", function() {
         cpu.register.A = 0xF2;
         cpu.register[i.r] = 0x34;
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(0);
+        expect(cpu.testFlag('C')).to.equal(0);
       });
     });
   });
@@ -888,25 +888,25 @@ describe("ALU opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0x00;
       ops[0xA6]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       cpu.register.A = 0xF2;
       ops[0xA6]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag", function() {
       cpu.register.A = 0xF2;
       ops[0xA6]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("resets C flag", function() {
       cpu.register.A = 0xF2;
       ops[0xA6]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -930,25 +930,25 @@ describe("ALU opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0x00;
       ops[0xE6]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       cpu.register.A = 0xF2;
       ops[0xE6]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag", function() {
       cpu.register.A = 0xF2;
       ops[0xE6]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("resets C flag", function() {
       cpu.register.A = 0xF2;
       ops[0xE6]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -966,25 +966,25 @@ describe("ALU opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0;
       ops[0xB7]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       cpu.register.A = 0xF2;
       ops[0xB7]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("resets H flag", function() {
       cpu.register.A = 0xF2;
       ops[0xB7]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("resets C flag", function() {
       cpu.register.A = 0xF2;
       ops[0xB7]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -1015,22 +1015,22 @@ describe("ALU opcodes", function() {
         cpu.register.A = 0x00;
         cpu.register[i.r] = 0x00;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N flag", function() {
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
       });
 
       it("resets H flag", function() {
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
 
       it("resets C flag", function() {
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(0);
+        expect(cpu.testFlag('C')).to.equal(0);
       });
     });
   });
@@ -1057,25 +1057,25 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0);
       cpu.register.A = 0;
       ops[0xB6]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       mockMMU.expects('read8').returns(0);
       ops[0xB6]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("resets H flag", function() {
       mockMMU.expects('read8').returns(0);
       ops[0xB6]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("resets C flag", function() {
       mockMMU.expects('read8').returns(0);
       ops[0xB6]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -1100,25 +1100,25 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0);
       cpu.register.A = 0;
       ops[0xF6]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       mockMMU.expects('read8').returns(0);
       ops[0xF6]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("resets H flag", function() {
       mockMMU.expects('read8').returns(0);
       ops[0xF6]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("resets C flag", function() {
       mockMMU.expects('read8').returns(0);
       ops[0xF6]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -1138,22 +1138,22 @@ describe("ALU opcodes", function() {
 
     it("sets Z flag if result is zero", function() {
       ops[0xAF]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       ops[0xAF]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("resets H flag", function() {
       ops[0xAF]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("resets C flag", function() {
       ops[0xAF]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -1184,22 +1184,22 @@ describe("ALU opcodes", function() {
         cpu.register.A = 0x00;
         cpu.register[i.r] = 0x00;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N flag", function() {
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
       });
 
       it("resets H flag", function() {
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
 
       it("resets C flag", function() {
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(0);
+        expect(cpu.testFlag('C')).to.equal(0);
       });
     });
   });
@@ -1225,22 +1225,22 @@ describe("ALU opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0x3F;
       ops[0xAE]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       ops[0xAE]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("resets H flag", function() {
       ops[0xAE]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("resets C flag", function() {
       ops[0xAE]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -1264,22 +1264,22 @@ describe("ALU opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0x3F;
       ops[0xEE]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       ops[0xEE]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("resets H flag", function() {
       ops[0xEE]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("resets C flag", function() {
       ops[0xEE]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -1296,25 +1296,25 @@ describe("ALU opcodes", function() {
     it("sets Z flag", function() {
       cpu.register.A = 0x3F;
       ops[0xBF]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
       cpu.register.A = 0x3F;
       ops[0xBF]();
-      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("resets H flag", function() {
       cpu.register.A = 0x3F;
       ops[0xBF]();
-      expect(cpu.flag.H()).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("resets C flag", function() {
       cpu.register.A = 0x3F;
       ops[0xBF]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -1341,36 +1341,36 @@ describe("ALU opcodes", function() {
         cpu.register.A = 0x35;
         cpu.register[i.r] = 0x35;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
 
         cpu.register.A = 0x42;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(0);
+        expect(cpu.testFlag('Z')).to.equal(0);
       });
 
       it("sets N flag", function() {
         cpu.register.A = 0x35;
         cpu.register[i.r] = 0x35;
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(1);
+        expect(cpu.testFlag('N')).to.equal(1);
       });
 
       it("sets H flag if borrow from bit 4", function() {
         cpu.register.A = 0x43;
         cpu.register[i.r] = 0x35;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(1);
+        expect(cpu.testFlag('H')).to.equal(1);
       });
 
       it("sets C flag if A < " + i.r, function() {
         cpu.register.A = 0x13;
         cpu.register[i.r] = 0x35;
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
 
         cpu.register.A = 0x43;
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(0);
+        expect(cpu.testFlag('C')).to.equal(0);
       });
     });
   });
@@ -1396,36 +1396,36 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').twice().withArgs(0xC4B2).returns(0x3F);
       cpu.register.A = 0x3F;
       ops[0xBE]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
 
       cpu.register.A = 0x42;
       ops[0xBE]();
-      expect(cpu.flag.Z()).to.equal(0);
+      expect(cpu.testFlag('Z')).to.equal(0);
     });
 
     it("sets N flag", function() {
       mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3F);
       cpu.register.A = 0x3F;
       ops[0xBE]();
-      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
       mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3F);
       cpu.register.A = 0x43;
       ops[0xBE]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if A < value at address HL", function() {
       mockMMU.expects('read8').twice().withArgs(0xC4B2).returns(0x3F);
       cpu.register.A = 0x13;
       ops[0xBE]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
 
       cpu.register.A = 0x43;
       ops[0xBE]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -1446,36 +1446,36 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').twice().returns(0x3F);
       cpu.register.A = 0x3F;
       ops[0xFE]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
 
       cpu.register.A = 0x42;
       ops[0xFE]();
-      expect(cpu.flag.Z()).to.equal(0);
+      expect(cpu.testFlag('Z')).to.equal(0);
     });
 
     it("sets N flag", function() {
       mockMMU.expects('read8').withArgs(0x201).returns(0x3F);
       cpu.register.A = 0x3F;
       ops[0xFE]();
-      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
       mockMMU.expects('read8').withArgs(0x201).returns(0x3F);
       cpu.register.A = 0x43;
       ops[0xFE]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if A < 8-bit immediate value n", function() {
       mockMMU.expects('read8').twice().returns(0x3F);
       cpu.register.A = 0x13;
       ops[0xFE]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
 
       cpu.register.A = 0x43;
       ops[0xFE]();
-      expect(cpu.flag.C()).to.equal(0);
+      expect(cpu.testFlag('C')).to.equal(0);
     });
   });
 
@@ -1502,19 +1502,19 @@ describe("ALU opcodes", function() {
       it("sets Z flag if result is zero", function() {
         cpu.register[i.r] = 0xFF;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N flag", function() {
         cpu.register[i.r] = 0x34;
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
       });
 
       it("sets H flag if carry from bit 3", function() {
         cpu.register[i.r] = 0x3F;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(1);
+        expect(cpu.testFlag('H')).to.equal(1);
       });
     });
   });
@@ -1540,18 +1540,18 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').once().withArgs(0xB25E).returns(0xFF);
       // mockMMU.expects('write8').once().withArgs(0xB25E, 0x51);
       ops[0x34]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
       ops[0x34]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag if carry from bit 3", function() {
       mockMMU.expects('read8').returns(0x3F);
       ops[0x34]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
   });
 
@@ -1578,19 +1578,19 @@ describe("ALU opcodes", function() {
       it("sets Z flag if result is zero", function() {
         cpu.register[i.r] = 0x01;
         ops[i.op]();
-        expect(cpu.flag.Z()).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("sets N flag", function() {
         cpu.register[i.r] = 0x34;
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(1);
+        expect(cpu.testFlag('N')).to.equal(1);
       });
 
       it("sets H flag if borrow from bit 4", function() {
         cpu.register[i.r] = 0x30;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(1);
+        expect(cpu.testFlag('H')).to.equal(1);
       });
     });
   });
@@ -1615,18 +1615,18 @@ describe("ALU opcodes", function() {
     it("sets Z flag if result is zero", function() {
       mockMMU.expects('read8').once().withArgs(0xB25E).returns(0x01);
       ops[0x35]();
-      expect(cpu.flag.Z()).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
       ops[0x35]();
-      expect(cpu.flag.N()).to.equal(1);
+      expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
       mockMMU.expects('read8').returns(0x30);
       ops[0x35]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
   });
 
@@ -1657,19 +1657,19 @@ describe("ALU opcodes", function() {
 
       it("resets N flag", function() {
         ops[i.op]();
-        expect(cpu.flag.N()).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
       });
 
       it("sets H flag if carry from bit 11", function() {
         cpu.register[r1] = 0x25;
         ops[i.op]();
-        expect(cpu.flag.H()).to.equal(1);
+        expect(cpu.testFlag('H')).to.equal(1);
       });
 
       it("sets C flag if carry from bit 15", function() {
         cpu.register[r1] = 0xF5;
         ops[i.op]();
-        expect(cpu.flag.C()).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
       });
     });
   });
@@ -1692,19 +1692,19 @@ describe("ALU opcodes", function() {
 
     it("resets N flag", function() {
       ops[0x29]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag if carry from bit 11", function() {
       cpu.register.H = 0x2F;
       ops[0x29]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 15", function() {
       cpu.register.H = 0xF0;
       ops[0x29]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
   });
 
@@ -1727,19 +1727,19 @@ describe("ALU opcodes", function() {
 
     it("resets N flag", function() {
       ops[0x39]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag if carry from bit 11", function() {
       cpu.register.H = 0x2F;
       ops[0x39]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 15", function() {
       cpu.register.H = 0xF0;
       ops[0x39]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
   });
 
@@ -1769,42 +1769,42 @@ describe("ALU opcodes", function() {
       mockMMU.expects('read8').returns(0x0A);
       cpu.sp = 0xAB90;
       ops[0xE8]();
-      expect(cpu.flag.Z()).to.equal(0);
+      expect(cpu.testFlag('Z')).to.equal(0);
     });
 
     it("resets N flag", function() {
       mockMMU.expects('read8').returns(0x0A);
       cpu.sp = 0xAB90;
       ops[0xE8]();
-      expect(cpu.flag.N()).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag if carry from bit 11", function() {
       mockMMU.expects('read8').returns(0x7F);
       cpu.sp = 0x1FFA;
       ops[0xE8]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 12", function() {
       mockMMU.expects('read8').returns(0x80);
       cpu.sp = 0x8001;
       ops[0xE8]();
-      expect(cpu.flag.H()).to.equal(1);
+      expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry", function() {
       mockMMU.expects('read8').returns(0x7F);
       cpu.sp = 0xFFFA;
       ops[0xE8]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("sets C flag if borrow", function() {
       mockMMU.expects('read8').returns(0xF0);
       cpu.sp = 0x0001;
       ops[0xE8]();
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
   });
 

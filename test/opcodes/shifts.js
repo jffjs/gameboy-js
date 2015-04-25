@@ -22,7 +22,7 @@ describe("Shift opcodes", function() {
       cpu.register.A = 0xB4;
       ops[0x07]();
       expect(cpu.register.A).to.equal(0x69);
-      expect(cpu.checkFlag('C')).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 1 machine cycle", function() {
@@ -32,15 +32,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0;
       ops[0x07]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0x07]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -50,7 +50,7 @@ describe("Shift opcodes", function() {
       cpu.setFlag('C');
       ops[0x17]();
       expect(cpu.register.A).to.equal(0x69);
-      expect(cpu.checkFlag('C')).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 1 machine cycle", function() {
@@ -60,15 +60,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0;
       ops[0x17]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0x17]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -77,7 +77,7 @@ describe("Shift opcodes", function() {
       cpu.register.A = 0x11;
       ops[0x0F]();
       expect(cpu.register.A).to.equal(0x88);
-      expect(cpu.flag.C()).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 1 machine cycle", function() {
@@ -87,15 +87,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0;
       ops[0x0F]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0x0F]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -104,7 +104,7 @@ describe("Shift opcodes", function() {
       cpu.register.A = 0x11;
       ops[0x1F]();
       expect(cpu.register.A).to.equal(0x08);
-      expect(cpu.checkFlag('C')).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 1 machine cycle", function() {
@@ -114,15 +114,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       cpu.register.A = 0;
       ops[0x1F]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0x1F]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -140,7 +140,7 @@ describe("Shift opcodes", function() {
         cpu.register[test.r] = 0xB4;
         ops[test.op]();
         expect(cpu.register[test.r]).to.equal(0x69);
-        expect(cpu.checkFlag('C')).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
       });
 
       it("takes 2 machine cycles", function() {
@@ -150,15 +150,15 @@ describe("Shift opcodes", function() {
       it("sets Z flag if result is zero", function() {
         cpu.register[test.r] = 0;
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N and H flags", function() {
         cpu.setFlag('N');
         cpu.setFlag('H');
         ops[test.op]();
-        expect(cpu.checkFlag('N')).to.equal(0);
-        expect(cpu.checkFlag('H')).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
     });
   });
@@ -174,7 +174,7 @@ describe("Shift opcodes", function() {
       mockMMU.expects('write8').once().withArgs(0x2C83, 0x69);
       ops[0xCB06]();
       mockMMU.verify();
-      expect(cpu.checkFlag('C')).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 4 machine cycles", function() {
@@ -184,15 +184,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
       ops[0xCB06]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0xCB06]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -211,7 +211,7 @@ describe("Shift opcodes", function() {
         cpu.setFlag('C');
         ops[test.op]();
         expect(cpu.register[test.r]).to.equal(0x69);
-        expect(cpu.checkFlag('C')).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
       });
 
       it("takes 2 machine cycles", function() {
@@ -221,15 +221,15 @@ describe("Shift opcodes", function() {
       it("sets Z flag if result is zero", function() {
         cpu.register[test.r] = 0;
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N and H flags", function() {
         cpu.setFlag('N');
         cpu.setFlag('H');
         ops[test.op]();
-        expect(cpu.checkFlag('N')).to.equal(0);
-        expect(cpu.checkFlag('H')).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
     });
   });
@@ -246,7 +246,7 @@ describe("Shift opcodes", function() {
       cpu.setFlag('C');
       ops[0xCB16]();
       mockMMU.verify();
-      expect(cpu.checkFlag('C')).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 4 machine cycles", function() {
@@ -256,15 +256,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
       ops[0xCB16]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0xCB16]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -282,7 +282,7 @@ describe("Shift opcodes", function() {
         cpu.register[test.r] = 0x11;
         ops[test.op]();
         expect(cpu.register[test.r]).to.equal(0x88);
-        expect(cpu.checkFlag('C')).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
       });
 
       it("takes 2 machine cycles", function() {
@@ -292,15 +292,15 @@ describe("Shift opcodes", function() {
       it("sets Z flag if result is zero", function() {
         cpu.register[test.r] = 0;
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N and H flags", function() {
         cpu.setFlag('N');
         cpu.setFlag('H');
         ops[test.op]();
-        expect(cpu.checkFlag('N')).to.equal(0);
-        expect(cpu.checkFlag('H')).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
     });
   });
@@ -316,7 +316,7 @@ describe("Shift opcodes", function() {
       mockMMU.expects('write8').once().withArgs(0x2C83, 0x88);
       ops[0xCB0E]();
       mockMMU.verify();
-      expect(cpu.checkFlag('C')).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 4 machine cycles", function() {
@@ -326,15 +326,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
       ops[0xCB0E]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0xCB0E]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -352,7 +352,7 @@ describe("Shift opcodes", function() {
         cpu.register[test.r] = 0x11;
         ops[test.op]();
         expect(cpu.register[test.r]).to.equal(0x08);
-        expect(cpu.checkFlag('C')).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
       });
 
       it("takes 1 machine cycle", function() {
@@ -362,15 +362,15 @@ describe("Shift opcodes", function() {
       it("sets Z flag if result is zero", function() {
         cpu.register[test.r] = 0;
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N and H flags", function() {
         cpu.setFlag('N');
         cpu.setFlag('H');
         ops[test.op]();
-        expect(cpu.checkFlag('N')).to.equal(0);
-        expect(cpu.checkFlag('H')).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
     });
   });
@@ -386,7 +386,7 @@ describe("Shift opcodes", function() {
       mockMMU.expects('write8').once().withArgs(0x2C83, 0x08);
       ops[0xCB1E]();
       mockMMU.verify();
-      expect(cpu.checkFlag('C')).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 4 machine cycles", function() {
@@ -396,15 +396,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
       ops[0xCB1E]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0xCB1E]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -422,7 +422,7 @@ describe("Shift opcodes", function() {
         cpu.register[test.r] = 0x88;
         ops[test.op]();
         expect(cpu.register[test.r]).to.equal(0x10);
-        expect(cpu.checkFlag('C')).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
       });
 
       it("takes 2 machine cycles", function() {
@@ -432,15 +432,15 @@ describe("Shift opcodes", function() {
       it("sets Z flag if result is zero", function() {
         cpu.register[test.r] = 0;
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N and H flags", function() {
         cpu.setFlag('N');
         cpu.setFlag('H');
         ops[test.op]();
-        expect(cpu.checkFlag('N')).to.equal(0);
-        expect(cpu.checkFlag('H')).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
     });
   });
@@ -456,7 +456,7 @@ describe("Shift opcodes", function() {
       mockMMU.expects('write8').once().withArgs(0x2C83, 0x10);
       ops[0xCB26]();
       mockMMU.verify();
-      expect(cpu.checkFlag('C')).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 4 machine cycles", function() {
@@ -466,15 +466,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       mockMMU.expects('read8').returns(0);
       ops[0xCB26]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0xCB26]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -492,7 +492,7 @@ describe("Shift opcodes", function() {
         cpu.register[test.r] = 0x91;
         ops[test.op]();
         expect(cpu.register[test.r]).to.equal(0xC8);
-        expect(cpu.checkFlag('C')).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
       });
 
       it("takes 2 machine cycles", function() {
@@ -502,15 +502,15 @@ describe("Shift opcodes", function() {
       it("sets Z flag if result is zero", function() {
         cpu.register[test.r] = 0;
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N and H flags", function() {
         cpu.setFlag('N');
         cpu.setFlag('H');
         ops[test.op]();
-        expect(cpu.checkFlag('N')).to.equal(0);
-        expect(cpu.checkFlag('H')).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
     });
   });
@@ -526,7 +526,7 @@ describe("Shift opcodes", function() {
       mockMMU.expects('write8').once().withArgs(0x2C83, 0xC8);
       ops[0xCB2E]();
       mockMMU.verify();
-      expect(cpu.checkFlag('C')).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 4 machine cycles", function() {
@@ -536,15 +536,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       mockMMU.expects('read8').returns(0);
       ops[0xCB2E]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0xCB2E]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 
@@ -562,7 +562,7 @@ describe("Shift opcodes", function() {
         cpu.register[test.r] = 0x91;
         ops[test.op]();
         expect(cpu.register[test.r]).to.equal(0x48);
-        expect(cpu.checkFlag('C')).to.equal(1);
+        expect(cpu.testFlag('C')).to.equal(1);
       });
 
       it("takes 2 machine cycles", function() {
@@ -572,15 +572,15 @@ describe("Shift opcodes", function() {
       it("sets Z flag if result is zero", function() {
         cpu.register[test.r] = 0;
         ops[test.op]();
-        expect(cpu.checkFlag('Z')).to.equal(1);
+        expect(cpu.testFlag('Z')).to.equal(1);
       });
 
       it("resets N and H flags", function() {
         cpu.setFlag('N');
         cpu.setFlag('H');
         ops[test.op]();
-        expect(cpu.checkFlag('N')).to.equal(0);
-        expect(cpu.checkFlag('H')).to.equal(0);
+        expect(cpu.testFlag('N')).to.equal(0);
+        expect(cpu.testFlag('H')).to.equal(0);
       });
     });
   });
@@ -596,7 +596,7 @@ describe("Shift opcodes", function() {
       mockMMU.expects('write8').once().withArgs(0x2C83, 0x48);
       ops[0xCB3E]();
       mockMMU.verify();
-      expect(cpu.checkFlag('C')).to.equal(1);
+      expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("takes 4 machine cycles", function() {
@@ -606,15 +606,15 @@ describe("Shift opcodes", function() {
     it("sets Z flag if result is zero", function() {
       mockMMU.expects('read8').returns(0);
       ops[0xCB3E]();
-      expect(cpu.checkFlag('Z')).to.equal(1);
+      expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N and H flags", function() {
       cpu.setFlag('N');
       cpu.setFlag('H');
       ops[0xCB3E]();
-      expect(cpu.checkFlag('N')).to.equal(0);
-      expect(cpu.checkFlag('H')).to.equal(0);
+      expect(cpu.testFlag('N')).to.equal(0);
+      expect(cpu.testFlag('H')).to.equal(0);
     });
   });
 });
