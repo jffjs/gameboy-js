@@ -31,7 +31,7 @@ describe("CPU", function() {
       ['A', 'B', 'C', 'D', 'E', 'F', 'H', 'L'].forEach(function(r) {
         cpu.register[r] = 0x35;
       });
-      
+
       cpu.reset();
       expect(cpu.pc).to.equal(0);
       expect(cpu.sp).to.equal(0);
