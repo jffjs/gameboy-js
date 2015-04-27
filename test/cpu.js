@@ -24,6 +24,12 @@ describe("CPU", function() {
       expect(cpu.enableInterrupts).to.be.false;
       expect(cpu.incrementPC).to.be.true;
     });
+
+    it("loads all cpu instructions", function() {
+      [0x87, 0xCB47, 0xC3, 0x3E, 0xCB37, 0x07].forEach(function(op) {
+        expect(cpu.instructions[op]).to.be.a('function');
+      });
+    });
   });
 
   describe("reset", function() {
