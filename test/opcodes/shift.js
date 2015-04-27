@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var CPU = require('../../lib/cpu');
 var MMU = require('../../lib/mmu');
-var shifts = require('../../lib/opcodes/shifts');
+var shifts = require('../../lib/opcodes/shift');
 
 describe("Shift opcodes", function() {
   var cpu, mockMMU, ops;

@@ -6,10 +6,12 @@ var CPU = require('../lib/cpu');
 var MMU = require('../lib/mmu');
 
 describe("CPU", function() {
-  var cpu;
+  var cpu, mockMMU;
 
   beforeEach(function() {
-    cpu = new CPU();
+    var mmu = new MMU();
+    mockMMU = sinon.mock(mmu);
+    cpu = new CPU(mmu);
   });
 
   describe("new CPU", function() {
@@ -40,6 +42,43 @@ describe("CPU", function() {
       });
       expect(cpu.enableInterrupts).to.be.false;
       expect(cpu.incrementPC).to.be.true;
+    });
+  });
+
+  describe("execute", function() {
+    beforeEach(function() {
+      cpu.pc = 0x200;
+    });
+
+    it("executes the instruction pointed to by PC", function() {
+      cpu.instructions[0x00] = function() { return 2; };
+      mockMMU.expects('read8').once().withArgs(0x200).returns(0x00);
+      cpu.execute();
+
+      expect(cpu.pc).to.equal(0x201);
+      expect(cpu.clock.M).to.equal(2);
+      expect(cpu.clock.T).to.equal(8);
+    });
+
+    it("fetches next byte if instruction is 0xCB", function() {
+      cpu.instructions[0xCB00] = function() { return 2; };
+      mockMMU.expects('read8').once().withArgs(0x200).returns(0xCB);
+      mockMMU.expects('read8').once().withArgs(0x201).returns(0x00);
+      cpu.execute();
+
+      expect(cpu.pc).to.equal(0x202);
+      expect(cpu.clock.M).to.equal(2);
+      expect(cpu.clock.T).to.equal(8);
+    });
+
+    it("does not increment PC if incrementPC flag is false", function() {
+      cpu.instructions[0x00] = function() { cpu.incrementPC = false; return 2; };
+      mockMMU.expects('read8').once().withArgs(0x200).returns(0x00);
+      cpu.execute();
+
+      expect(cpu.pc).to.equal(0x200);
+      expect(cpu.clock.M).to.equal(2);
+      expect(cpu.clock.T).to.equal(8);
     });
   });
 
