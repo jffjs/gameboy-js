@@ -224,7 +224,7 @@ describe("Load opcodes", function() {
 
   describe("LD (nn),A", function() {
     beforeEach(function() {
-      mockMMU.expects('read16').once().withArgs(0x0202).returns(0xA980);
+      mockMMU.expects('read16').once().withArgs(0x0201).returns(0xA980);
       cpu.register.A = 0xBC;
     });
 
@@ -278,7 +278,7 @@ describe("Load opcodes", function() {
 
   describe("LD A,(nn)", function() {
     beforeEach(function() {
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x5544);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x5544);
       mockMMU.expects('read8').once().returns(0x23);
     });
 
@@ -426,7 +426,7 @@ describe("Load opcodes", function() {
 
   describe("LD BC,nn", function() {
     it("loads 16-bit immediate value into BC", function() {
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x1234);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x1234);
       ops[0x01]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x202);
@@ -441,7 +441,7 @@ describe("Load opcodes", function() {
 
   describe("LD DE,nn", function() {
     it("loads 16-bit immediate value into DE", function() {
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x1234);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x1234);
       ops[0x11]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x202);
@@ -456,7 +456,7 @@ describe("Load opcodes", function() {
 
   describe("LD HL,nn", function() {
     it("loads 16-bit immediate value into HL", function() {
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x1234);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x1234);
       ops[0x21]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x202);
@@ -471,7 +471,7 @@ describe("Load opcodes", function() {
 
   describe("LD SP,nn", function() {
     it("loads 16-bit immediate value into stack pointer", function() {
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x1234);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x1234);
       ops[0x31]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x202);
@@ -565,7 +565,7 @@ describe("Load opcodes", function() {
 
   describe("LD (nn),SP", function() {
     it("loads stack pointer into address at 16-bit immediate value nn", function() {
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x7348);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x7348);
       mockMMU.expects('write16').once().withArgs(0x7348, 0x4321);
       cpu.sp = 0x4321;
       ops[0x08]();

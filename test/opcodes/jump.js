@@ -19,7 +19,7 @@ describe("Jump opcodes", function() {
 
   describe("JP nn", function() {
     it("jumps to 16-bit immediate value nn", function() {
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x34AB);
       ops[0xC3]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x34AB);
@@ -34,7 +34,7 @@ describe("Jump opcodes", function() {
   describe("JP NZ,nn", function() {
     it("jumps to 16-bit immediate value nn if Z flag is 0", function() {
       cpu.resetFlag('Z');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x34AB);
       ops[0xC2]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x34AB);
@@ -43,7 +43,7 @@ describe("Jump opcodes", function() {
 
     it("does not jump if Z flag is 1", function() {
       cpu.setFlag('Z');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x34AB);
       ops[0xC2]();
       expect(cpu.pc).to.equal(0x200);
       expect(cpu.incrementPC).to.be.true;
@@ -57,7 +57,7 @@ describe("Jump opcodes", function() {
   describe("JP Z,nn", function() {
     it("jumps to 16-bit immediate value nn if Z flag is 1", function() {
       cpu.setFlag('Z');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x34AB);
       ops[0xCA]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x34AB);
@@ -66,7 +66,7 @@ describe("Jump opcodes", function() {
 
     it("does not jump if Z flag is 0", function() {
       cpu.resetFlag('Z');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x34AB);
       ops[0xCA]();
       expect(cpu.pc).to.equal(0x200);
       expect(cpu.incrementPC).to.be.true;
@@ -80,7 +80,7 @@ describe("Jump opcodes", function() {
   describe("JP NC,nn", function() {
     it("jumps to 16-bit immediate value nn if C flag is 0", function() {
       cpu.resetFlag('C');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x34AB);
       ops[0xD2]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x34AB);
@@ -89,7 +89,7 @@ describe("Jump opcodes", function() {
 
     it("does not jump if C flag is 1", function() {
       cpu.setFlag('C');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x34AB);
       ops[0xD2]();
       expect(cpu.pc).to.equal(0x200);
       expect(cpu.incrementPC).to.be.true;
@@ -103,7 +103,7 @@ describe("Jump opcodes", function() {
   describe("JP C,nn", function() {
     it("jumps to 16-bit immediate value nn if C flag is 1", function() {
       cpu.setFlag('C');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x34AB);
       ops[0xDA]();
       mockMMU.verify();
       expect(cpu.pc).to.equal(0x34AB);
@@ -112,7 +112,7 @@ describe("Jump opcodes", function() {
 
     it("does not jump if C flag is 0", function() {
       cpu.resetFlag('C');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0x34AB);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0x34AB);
       ops[0xDA]();
       expect(cpu.pc).to.equal(0x200);
       expect(cpu.incrementPC).to.be.true;
@@ -296,8 +296,8 @@ describe("Jump opcodes", function() {
     });
 
     it("pushes address of next instruction onto stack and jumps to 16-bit immediate address nn", function() {
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0xABCD);
-      mockMMU.expects('write16').once().withArgs(0xFFEE, 0x203);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0xABCD);
+      mockMMU.expects('write16').once().withArgs(0xFFEF, 0x203);
       ops[0xCD]();
       mockMMU.verify();
       expect(cpu.sp).to.equal(0xFFEE);
@@ -317,8 +317,8 @@ describe("Jump opcodes", function() {
 
     it("pushes address of next instruction onto stack and jumps to 16-bit immediate address nn if Z flag is 0", function() {
       cpu.resetFlag('Z');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0xABCD);
-      mockMMU.expects('write16').once().withArgs(0xFFEE, 0x203);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0xABCD);
+      mockMMU.expects('write16').once().withArgs(0xFFEF, 0x203);
       ops[0xC4]();
       mockMMU.verify();
       expect(cpu.sp).to.equal(0xFFEE);
@@ -346,8 +346,8 @@ describe("Jump opcodes", function() {
 
     it("pushes address of next instruction onto stack and jumps to 16-bit immediate address nn if Z flag is 1", function() {
       cpu.setFlag('Z');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0xABCD);
-      mockMMU.expects('write16').once().withArgs(0xFFEE, 0x203);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0xABCD);
+      mockMMU.expects('write16').once().withArgs(0xFFEF, 0x203);
       ops[0xCC]();
       mockMMU.verify();
       expect(cpu.sp).to.equal(0xFFEE);
@@ -375,8 +375,8 @@ describe("Jump opcodes", function() {
 
     it("pushes address of next instruction onto stack and jumps to 16-bit immediate address nn if C flag is 0", function() {
       cpu.resetFlag('C');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0xABCD);
-      mockMMU.expects('write16').once().withArgs(0xFFEE, 0x203);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0xABCD);
+      mockMMU.expects('write16').once().withArgs(0xFFEF, 0x203);
       ops[0xD4]();
       mockMMU.verify();
       expect(cpu.sp).to.equal(0xFFEE);
@@ -404,8 +404,8 @@ describe("Jump opcodes", function() {
 
     it("pushes address of next instruction onto stack and jumps to 16-bit immediate address nn if C flag is 1", function() {
       cpu.setFlag('C');
-      mockMMU.expects('read16').once().withArgs(0x202).returns(0xABCD);
-      mockMMU.expects('write16').once().withArgs(0xFFEE, 0x203);
+      mockMMU.expects('read16').once().withArgs(0x201).returns(0xABCD);
+      mockMMU.expects('write16').once().withArgs(0xFFEF, 0x203);
       ops[0xDC]();
       mockMMU.verify();
       expect(cpu.sp).to.equal(0xFFEE);
@@ -438,7 +438,7 @@ describe("Jump opcodes", function() {
   ].forEach(function(test) {
     describe("RST " + test.p.toString(16) + "h", function() {
       it("pushes current address onto stack and jumps to 0x00" + test.p.toString(16), function() {
-        mockMMU.expects('write16').once().withArgs(0xFFEE, 0x201);
+        mockMMU.expects('write16').once().withArgs(0xFFEF, 0x201);
         cpu.sp = 0xFFF0;
         ops[test.op]();
         mockMMU.verify();
@@ -454,7 +454,7 @@ describe("Jump opcodes", function() {
 
   describe("RET", function() {
     it("pops two bytes from stack and jumps to that address", function() {
-      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      mockMMU.expects('read16').once().withArgs(0xFFEF).returns(0xABCD);
       cpu.sp = 0xFFEE;
       ops[0xC9]();
       mockMMU.verify();
@@ -470,7 +470,7 @@ describe("Jump opcodes", function() {
 
   describe("RET NZ", function() {
     it("pops two bytes from stack and jumps to that address if Z flag is 0", function() {
-      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      mockMMU.expects('read16').once().withArgs(0xFFEF).returns(0xABCD);
       cpu.resetFlag('Z');
       cpu.sp = 0xFFEE;
       ops[0xC0]();
@@ -496,7 +496,7 @@ describe("Jump opcodes", function() {
 
   describe("RET Z", function() {
     it("pops two bytes from stack and jumps to that address if Z flag is 1", function() {
-      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      mockMMU.expects('read16').once().withArgs(0xFFEF).returns(0xABCD);
       cpu.setFlag('Z');
       cpu.sp = 0xFFEE;
       ops[0xC8]();
@@ -522,7 +522,7 @@ describe("Jump opcodes", function() {
 
   describe("RET NC", function() {
     it("pops two bytes from stack and jumps to that address if C flag is 0", function() {
-      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      mockMMU.expects('read16').once().withArgs(0xFFEF).returns(0xABCD);
       cpu.resetFlag('C');
       cpu.sp = 0xFFEE;
       ops[0xD0]();
@@ -548,7 +548,7 @@ describe("Jump opcodes", function() {
 
   describe("RET C", function() {
     it("pops two bytes from stack and jumps to that address if C flag is 1", function() {
-      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      mockMMU.expects('read16').once().withArgs(0xFFEF).returns(0xABCD);
       cpu.setFlag('C');
       cpu.sp = 0xFFEE;
       ops[0xD8]();
@@ -574,7 +574,7 @@ describe("Jump opcodes", function() {
 
   describe("RETI", function() {
     it("returns and enables interrupts", function() {
-      mockMMU.expects('read16').once().withArgs(0xFFF0).returns(0xABCD);
+      mockMMU.expects('read16').once().withArgs(0xFFEF).returns(0xABCD);
       cpu.setFlag('C');
       cpu.sp = 0xFFEE;
       ops[0xD9]();
