@@ -33,10 +33,21 @@ describe("MMU", function() {
     });
   });
 
-  describe.skip("read8", function() {
-    it("returns byte at address", function() {
-      mmu._memory[0x200] = 0xFF;
-      expect(mmu.read8(0x200)).to.equal(0xFF);
+  describe("read8", function() {
+    it("reads from BIOS when address is less than 100h and inBIOS flag is true", function() {
+      mmu.bios[0x50] = 0xAB;
+      expect(mmu.read8(0x50)).to.equal(0xAB);
+    });
+
+    it("reads from ROM bank 0 when address is less than 100h and inBIOS flag is false", function() {
+      mmu.ROM[0x50] = 0xAB;
+      mmu.inBIOS = false;
+      expect(mmu.read8(0x50)).to.equal(0xAB);
+    });
+
+    it("reads from from ROM bank 0 when address is less than 4000h", function() {
+      mmu.ROM[0x500] = 0xAB;
+      expect(mmu.read8(0x500)).to.equal(0xAB);
     });
   });
 
