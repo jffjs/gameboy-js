@@ -3,12 +3,15 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var MMU = require('../lib/mmu');
+var GPU = require('../lib/gpu');
 
 describe("MMU", function() {
-  var mmu;
+  var mmu, mockGPU;
 
   beforeEach(function() {
-    mmu = new MMU();
+    var gpu = new GPU();
+    mockGPU = sinon.mock(gpu);
+    mmu = new MMU(gpu);
   });
 
   describe("new MMU", function() {
@@ -48,6 +51,17 @@ describe("MMU", function() {
     it("reads from from ROM bank 0 when address is less than 4000h", function() {
       mmu.ROM[0x500] = 0xAB;
       expect(mmu.read8(0x500)).to.equal(0xAB);
+    });
+
+    it("reads from switchable ROM bank when address is between 4000h and 8000h", function() {
+      mmu.ROM[0x4500] = 0x12;
+      expect(mmu.read8(0x4500)).to.equal(0x12);
+    });
+
+    it("reads from VRAM when address is between 8000h and A000h", function() {
+      mockGPU.expects('read').once().withArgs(0x50).returns(0x34);
+      expect(mmu.read8(0x8050)).to.equal(0x34);
+      mockGPU.verify();
     });
   });
 
