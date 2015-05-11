@@ -86,6 +86,15 @@ describe("CPU", function() {
       expect(cpu.clock.M).to.equal(2);
       expect(cpu.clock.T).to.equal(8);
     });
+
+    it("sets inBIOS flag of MMU to false when program counter reaches 100h", function() {
+      cpu.instructions[0x00] = function() { return 2; };
+      mockMMU.expects('read8').once().withArgs(0xFF).returns(0x00);
+      cpu.pc = 0xFF;
+      cpu.execute();
+
+      expect(cpu.mmu.inBIOS).to.be.false;
+    });
   });
 
   describe("testFlag", function() {
