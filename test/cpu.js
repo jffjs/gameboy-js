@@ -95,6 +95,13 @@ describe("CPU", function() {
 
       expect(cpu.mmu.inBIOS).to.be.false;
     });
+
+    it("returns the time of execution as T clocks", function() {
+      cpu.instructions[0x00] = function() { return 2; };
+      mockMMU.expects('read8').once().withArgs(0x200).returns(0x00);
+
+      expect(cpu.execute()).to.equal(8);
+    });
   });
 
   describe("testFlag", function() {
