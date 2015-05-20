@@ -84,21 +84,21 @@ describe("GPU", function() {
     });
   });
 
-  describe("getSpriteSizeSelect", function() {
-    it("returns Sprite Size Select bit from LCD Control register", function() {
+  describe("getObjSizeSelect", function() {
+    it("returns Obj Size Select bit from LCD Control register", function() {
       gpu.lcdc = 0xF4;
-      expect(gpu.getSpriteSizeSelect()).to.equal(1);
+      expect(gpu.getObjSizeSelect()).to.equal(1);
       gpu.lcdc = 0x22;
-      expect(gpu.getSpriteSizeSelect()).to.equal(0);
+      expect(gpu.getObjSizeSelect()).to.equal(0);
     });
   });
 
-  describe("getSpriteDisplayEnable", function() {
-    it("returns Sprite Display Enable bit from LCD Control register", function() {
+  describe("getObjDisplayEnable", function() {
+    it("returns Obj Display Enable bit from LCD Control register", function() {
       gpu.lcdc = 0xF2;
-      expect(gpu.getSpriteDisplayEnable()).to.equal(1);
+      expect(gpu.getObjDisplayEnable()).to.equal(1);
       gpu.lcdc = 0x24;
-      expect(gpu.getSpriteDisplayEnable()).to.equal(0);
+      expect(gpu.getObjDisplayEnable()).to.equal(0);
     });
   });
 
@@ -108,6 +108,12 @@ describe("GPU", function() {
       expect(gpu.getBackgroundDisplayEnable()).to.equal(1);
       gpu.lcdc = 0x22;
       expect(gpu.getBackgroundDisplayEnable()).to.equal(0);
+    });
+  });
+
+  describe("getTile", function() {
+    describe("tile data select = 1", function() {
+      it("returns specified tile (tile number 0 to 256)");
     });
   });
 
