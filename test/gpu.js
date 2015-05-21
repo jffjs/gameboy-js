@@ -111,12 +111,6 @@ describe("GPU", function() {
     });
   });
 
-  describe("getTile", function() {
-    describe("tile data select = 1", function() {
-      it("returns specified tile (tile number 0 to 256)");
-    });
-  });
-
   describe("execute", function() {
     it("increments clock by t", function() {
       gpu.clock = 2;
