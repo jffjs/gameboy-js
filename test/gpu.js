@@ -111,6 +111,49 @@ describe("GPU", function() {
     });
   });
 
+  describe("getTile", function() {
+    beforeEach(function() {
+      for (var i = 0; i < 384 * 16; i++) {
+        gpu.tileData[i] = i+1;
+      }
+    });
+
+    describe("tile data select = 1", function() {
+      it("returns specified tile (tile number 0 to 256)", function() {
+        gpu.lcdc = 0x10;
+        var tile = gpu.getTile(0);
+        expect(tile.length).to.equal(16);
+        expect(tile[0]).to.equal(gpu.tileData[0]);
+        expect(tile[1]).to.equal(gpu.tileData[1]);
+        expect(tile[2]).to.equal(gpu.tileData[2]);
+        expect(tile[15]).to.equal(gpu.tileData[15]);
+
+        tile = gpu.getTile(45);
+        expect(tile[0]).to.equal(gpu.tileData[720]);
+        expect(tile[1]).to.equal(gpu.tileData[721]);
+        expect(tile[15]).to.equal(gpu.tileData[735]);
+      });
+    });
+
+    describe("tile data select = 0", function() {
+      it("returns specified tile (tile number -128 to 127)", function() {
+        var tile = gpu.getTile(-128);
+        expect(tile.length).to.equal(16);
+        expect(tile[0]).to.equal(gpu.tileData[2048]);
+        expect(tile[1]).to.equal(gpu.tileData[2049]);
+        expect(tile[2]).to.equal(gpu.tileData[2050]);
+        expect(tile[15]).to.equal(gpu.tileData[2063]);
+
+        tile = gpu.getTile(50);
+        console.log(tile[0]);
+        console.log(gpu.tileData[5696]);
+        expect(tile[0]).to.equal(gpu.tileData[4896]);
+        expect(tile[1]).to.equal(gpu.tileData[4897]);
+        expect(tile[15]).to.equal(gpu.tileData[4911]);
+      });
+    });
+  });
+
   describe("execute", function() {
     it("increments clock by t", function() {
       gpu.clock = 2;
