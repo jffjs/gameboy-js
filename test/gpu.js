@@ -152,6 +152,22 @@ describe("GPU", function() {
         expect(tile[15]).to.equal(gpu.tileData[4911]);
       });
     });
+
+    describe("tile data sets overlap", function() {
+      it("returns the same tile between 128 to 255 (1) and -128 to -1 (0)", function() {
+        gpu.lcdc = 0;
+        var a0 = gpu.getTile(-128);
+        var b0 = gpu.getTile(-56);
+        var c0 = gpu.getTile(-1);
+        gpu.lcdc = 0x10;
+        var a1 = gpu.getTile(128);
+        var b1 = gpu.getTile(200);
+        var c1 = gpu.getTile(255);
+        expect(a0).to.eql(a1);
+        expect(b0).to.eql(b1);
+        expect(c0).to.eql(c1);
+      });
+    });
   });
 
   describe("execute", function() {
