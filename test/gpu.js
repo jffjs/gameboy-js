@@ -75,12 +75,12 @@ describe("GPU", function() {
     });
   });
 
-  describe("getBackgroundTileMapSelect", function() {
+  describe("getBgTileMapSelect", function() {
     it("returns Background Tile Map Select bit from LCD Control register", function() {
       gpu.lcdc = 0xF8;
-      expect(gpu.getBackgroundTileMapSelect()).to.equal(1);
+      expect(gpu.getBgTileMapSelect()).to.equal(1);
       gpu.lcdc = 0x22;
-      expect(gpu.getBackgroundTileMapSelect()).to.equal(0);
+      expect(gpu.getBgTileMapSelect()).to.equal(0);
     });
   });
 
@@ -102,71 +102,12 @@ describe("GPU", function() {
     });
   });
 
-  describe("getBackgroundDisplayEnable", function() {
+  describe("getBgDisplayEnable", function() {
     it("returns Background Display Enable bit from LCD Control register", function() {
       gpu.lcdc = 0xF1;
-      expect(gpu.getBackgroundDisplayEnable()).to.equal(1);
+      expect(gpu.getBgDisplayEnable()).to.equal(1);
       gpu.lcdc = 0x22;
-      expect(gpu.getBackgroundDisplayEnable()).to.equal(0);
-    });
-  });
-
-  describe("getTile", function() {
-    beforeEach(function() {
-      for (var i = 0; i < 384 * 16; i++) {
-        gpu.tileData[i] = i+1;
-      }
-    });
-
-    describe("tile data select = 1", function() {
-      it("returns specified tile (tile number 0 to 256)", function() {
-        gpu.lcdc = 0x10;
-        var tile = gpu.getTile(0);
-        expect(tile.length).to.equal(16);
-        expect(tile[0]).to.equal(gpu.tileData[0]);
-        expect(tile[1]).to.equal(gpu.tileData[1]);
-        expect(tile[2]).to.equal(gpu.tileData[2]);
-        expect(tile[15]).to.equal(gpu.tileData[15]);
-
-        tile = gpu.getTile(45);
-        expect(tile[0]).to.equal(gpu.tileData[720]);
-        expect(tile[1]).to.equal(gpu.tileData[721]);
-        expect(tile[15]).to.equal(gpu.tileData[735]);
-      });
-    });
-
-    describe("tile data select = 0", function() {
-      it("returns specified tile (tile number -128 to 127)", function() {
-        var tile = gpu.getTile(-128);
-        expect(tile.length).to.equal(16);
-        expect(tile[0]).to.equal(gpu.tileData[2048]);
-        expect(tile[1]).to.equal(gpu.tileData[2049]);
-        expect(tile[2]).to.equal(gpu.tileData[2050]);
-        expect(tile[15]).to.equal(gpu.tileData[2063]);
-
-        tile = gpu.getTile(50);
-        console.log(tile[0]);
-        console.log(gpu.tileData[5696]);
-        expect(tile[0]).to.equal(gpu.tileData[4896]);
-        expect(tile[1]).to.equal(gpu.tileData[4897]);
-        expect(tile[15]).to.equal(gpu.tileData[4911]);
-      });
-    });
-
-    describe("tile data sets overlap", function() {
-      it("returns the same tile between 128 to 255 (1) and -128 to -1 (0)", function() {
-        gpu.lcdc = 0;
-        var a0 = gpu.getTile(-128);
-        var b0 = gpu.getTile(-56);
-        var c0 = gpu.getTile(-1);
-        gpu.lcdc = 0x10;
-        var a1 = gpu.getTile(128);
-        var b1 = gpu.getTile(200);
-        var c1 = gpu.getTile(255);
-        expect(a0).to.eql(a1);
-        expect(b0).to.eql(b1);
-        expect(c0).to.eql(c1);
-      });
+      expect(gpu.getBgDisplayEnable()).to.equal(0);
     });
   });
 
@@ -180,7 +121,7 @@ describe("GPU", function() {
     describe("mode 0", function() {
       beforeEach(function() {
         gpu.setMode(0);
-        gpu.line = 10;
+        gpu.ly = 10;
         gpu.clock = 200;
       });
 
@@ -191,7 +132,7 @@ describe("GPU", function() {
 
       it("increments line number at 204 ticks", function() {
         gpu.execute(4);
-        expect(gpu.line).to.equal(11);
+        expect(gpu.ly).to.equal(11);
       });
 
       it("switches to mode 2 at 204 ticks", function() {
@@ -200,7 +141,7 @@ describe("GPU", function() {
       });
 
       it("switches to mode 1 after 143 lines", function () {
-        gpu.line = 142;
+        gpu.ly = 142;
         gpu.execute(4);
         expect(gpu.getMode()).to.equal(1);
       });
@@ -209,7 +150,7 @@ describe("GPU", function() {
     describe("mode 1", function() {
       beforeEach(function() {
         gpu.setMode(1);
-        gpu.line = 144;
+        gpu.ly = 144;
         gpu.clock = 453;
       });
 
@@ -220,19 +161,19 @@ describe("GPU", function() {
 
       it("increments line number at 456 ticks", function() {
         gpu.execute(4);
-        expect(gpu.line).to.equal(145);
+        expect(gpu.ly).to.equal(145);
       });
 
       it("switches to mode 2 at 456 ticks after 10 lines", function() {
-        gpu.line = 153;
+        gpu.ly = 153;
         gpu.execute(4);
         expect(gpu.getMode()).to.equal(2);
       });
 
       it("resets line count at 456 ticks after 10 lines", function() {
-        gpu.line = 153;
+        gpu.ly = 153;
         gpu.execute(4);
-        expect(gpu.line).to.equal(0);
+        expect(gpu.ly).to.equal(0);
       });
     });
 
