@@ -209,4 +209,31 @@ describe("GPU", function() {
       });
     });
   });
+
+  describe.only("renderScan", function() {
+    it("renders line ly to screen as array of RGBA values", function() {
+      gpu.ly = 0;
+      gpu.scx = 0;
+      gpu.scy = 0;
+      gpu.lcdc = 0x10;
+      gpu.bgp = 0xE4; // 3210
+      for(var i = 0; i < 32; i++) {
+        gpu.tileMap[0][i] = 10;
+      }
+      for(i = 0; i < 16; i+=2) {
+        gpu.tileData[160+i] = 0xFF;
+        gpu.tileData[160+i+1] = 0x0;
+      }
+
+      gpu.renderScan();
+      expect(gpu.screen[0]).to.equal(170); // R
+      expect(gpu.screen[1]).to.equal(170); // G
+      expect(gpu.screen[2]).to.equal(170); // B
+      expect(gpu.screen[3]).to.equal(255); // A
+      expect(gpu.screen[4]).to.equal(170); // R
+      expect(gpu.screen[5]).to.equal(170); // G
+      expect(gpu.screen[6]).to.equal(170); // B
+      expect(gpu.screen[7]).to.equal(255); // A
+    });
+  });
 });
