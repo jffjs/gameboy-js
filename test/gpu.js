@@ -210,12 +210,12 @@ describe("GPU", function() {
     });
   });
 
-  describe.only("renderScan", function() {
+  describe("renderScan", function() {
     it("renders line ly to screen as array of RGBA values", function() {
       gpu.ly = 0;
       gpu.scx = 0;
       gpu.scy = 0;
-      gpu.lcdc = 0x10;
+      gpu.lcdc = 0x11;
       gpu.bgp = 0xE4; // 3210
       for(var i = 0; i < 32; i++) {
         gpu.tileMap[0][i] = 10;
