@@ -215,14 +215,22 @@ describe("GPU", function() {
       gpu.ly = 0;
       gpu.scx = 80;
       gpu.scy = 0;
+      gpu.wx = 7;
+      gpu.wy = 3;
       gpu.lcdc = 0x31; // Window enable, tile data = 1, bg enable
       gpu.bgp = 0xE4; // 3-2-1-0
 
-      for(var i = 0; i < 32; i++) {
+      for(var i = 0; i < 10; i++) {
         gpu.tileMap[0][10 + i] = 10;
+        gpu.tileMap[0][i] = 11;
       }
+      gpu.tileMap[0][1] = 1;
 
       for(i = 0; i < 16; i+=2) {
+        // Tile 1
+        gpu.tileData[16 + i] = 0xFF;
+        gpu.tileData[16+i+1] = 0xF0;
+
         // Tile 10 is all color = 1;
         gpu.tileData[160+i] = 0xFF;
         gpu.tileData[160+i+1] = 0x0;
@@ -233,16 +241,22 @@ describe("GPU", function() {
       }
     });
 
-    it("renders line ly to screen as array of RGBA values", function() {
-      gpu.renderScan();
-      expect(gpu.screen[0]).to.equal(170); // R
-      expect(gpu.screen[1]).to.equal(170); // G
-      expect(gpu.screen[2]).to.equal(170); // B
-      expect(gpu.screen[3]).to.equal(255); // A
-      expect(gpu.screen[4]).to.equal(170); // R
-      expect(gpu.screen[5]).to.equal(170); // G
-      expect(gpu.screen[6]).to.equal(170); // B
-      expect(gpu.screen[7]).to.equal(255); // A
+    it.only("renders line ly to screen as array of RGBA values", function() {
+      for(var i =0; i < 8; i++) {
+        gpu.ly = i;
+        gpu.renderScan();
+      }
+      // console.log(gpu.screen.subarray(0,100));
+      console.log(gpu.debugScreen(10));
+
+      // expect(gpu.screen[0]).to.equal(170); // R
+      // expect(gpu.screen[1]).to.equal(170); // G
+      // expect(gpu.screen[2]).to.equal(170); // B
+      // expect(gpu.screen[3]).to.equal(255); // A
+      // expect(gpu.screen[4]).to.equal(170); // R
+      // expect(gpu.screen[5]).to.equal(170); // G
+      // expect(gpu.screen[6]).to.equal(170); // B
+      // expect(gpu.screen[7]).to.equal(255); // A
     });
 
     it("renders window over background", function() {
