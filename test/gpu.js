@@ -232,7 +232,7 @@ describe("GPU", function() {
         gpu.tileData[16+i+1] = 0xF0;
 
         // Tile 10 is all color = 1;
-        gpu.tileData[160+i] = 0xFF;
+        gpu.tileData[160+i] = 0xff;
         gpu.tileData[160+i+1] = 0x0;
 
         // Tile 11 is all color = 2;
@@ -246,7 +246,7 @@ describe("GPU", function() {
         gpu.ly = i;
         gpu.renderScan();
       }
-      // console.log(gpu.screen.subarray(0,100));
+      // console.log(gpu.screen.subarray(0,800));
       console.log(gpu.debugScreen(10));
 
       // expect(gpu.screen[0]).to.equal(170); // R
