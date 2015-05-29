@@ -213,15 +213,15 @@ describe("GPU", function() {
   describe("renderScan", function() {
     beforeEach(function() {
       gpu.ly = 0;
-      gpu.scx = 80;
+      gpu.scx = 20;
       gpu.scy = 0;
-      gpu.wx = 7;
-      gpu.wy = 3;
+      gpu.wx = 0;
+      gpu.wy = 0;
       gpu.lcdc = 0x31; // Window enable, tile data = 1, bg enable
       gpu.bgp = 0xE4; // 3-2-1-0
 
       for(var i = 0; i < 10; i++) {
-        gpu.tileMap[0][10 + i] = 10;
+        gpu.tileMap[0][20 + i] = 10;
         gpu.tileMap[0][i] = 11;
       }
       gpu.tileMap[0][1] = 1;
@@ -242,7 +242,7 @@ describe("GPU", function() {
     });
 
     it.only("renders line ly to screen as array of RGBA values", function() {
-      for(var i =0; i < 8; i++) {
+      for(var i =0; i < 12; i++) {
         gpu.ly = i;
         gpu.renderScan();
       }
