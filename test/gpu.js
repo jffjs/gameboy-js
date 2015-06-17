@@ -210,7 +210,7 @@ describe("GPU", function() {
     });
   });
 
-  describe("renderScan", function() {
+  describe.skip("renderScan", function() {
     beforeEach(function() {
       gpu.ly = 0;
       gpu.scx = 0;
@@ -245,13 +245,13 @@ describe("GPU", function() {
       }
     });
 
-    it.only("renders line ly to screen as array of RGBA values", function() {
+    it("renders line ly to screen as array of RGBA values", function() {
       for(var i =0; i < 15; i++) {
         gpu.ly = i;
         gpu.renderScan();
       }
       // console.log(gpu.screen.subarray(0,800));
-      console.log(gpu.debugScreen(15));
+      // console.log(gpu.debugScreen(15));
 
       // expect(gpu.screen[0]).to.equal(170); // R
       // expect(gpu.screen[1]).to.equal(170); // G
