@@ -7,12 +7,13 @@ var MMU = require('../../lib/mmu');
 var bit = require('../../lib/opcodes/bit');
 
 describe("Bit opcodes", function() {
-  var cpu, mockMMU, ops;
+  var cpu, mockMMU, read8Stub, write8Spy, ops;
 
   beforeEach(function() {
     cpu = new CPU();
     var mmu = new MMU();
-    mockMMU = sinon.mock(mmu);
+    read8Stub = sinon.stub(mmu, 'read8');
+    write8Spy = sinon.spy(mmu, 'write8');
     ops = bit(cpu, mmu);
     cpu.pc = 0x200;
   });
@@ -123,15 +124,14 @@ describe("Bit opcodes", function() {
       });
 
       it("resets Z flag if bit " + test.b + " of value at address HL is 1", function() {
-        mockMMU.expects('read8').once().withArgs(0x2C83).returns(test.value);
+        read8Stub.withArgs(0x2C83).returns(test.value);
         cpu.setFlag('Z');
         ops[test.op]();
-        mockMMU.verify();
         expect(cpu.testFlag('Z')).to.equal(0);
       });
 
       it("sets Z flag if bit " + test.b + " is 0", function() {
-        mockMMU.expects('read8').once().withArgs(0x2C83).returns(test.value >> 1);
+        read8Stub.withArgs(0x2C83).returns(test.value >> 1);
         cpu.resetFlag('Z');
         ops[test.op]();
         expect(cpu.testFlag('Z')).to.equal(1);
@@ -241,10 +241,9 @@ describe("Bit opcodes", function() {
       });
 
       it("sets bit " + test.b + " of value at address HL", function() {
-        mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
-        mockMMU.expects('write8').once().withArgs(0x2C83, test.value);
+        read8Stub.withArgs(0x2C83).returns(0);
         ops[test.op]();
-        mockMMU.verify();
+        expect(write8Spy.calledWith(0x2C83, test.value)).to.be.true;
       });
 
       it("takes 4 machine cycles", function() {
@@ -341,10 +340,9 @@ describe("Bit opcodes", function() {
       });
 
       it("sets bit " + test.b + " of value at address HL", function() {
-        mockMMU.expects('read8').once().withArgs(0x2C83).returns(test.value);
-        mockMMU.expects('write8').once().withArgs(0x2C83, 0);
+        read8Stub.withArgs(0x2C83).returns(test.value);
         ops[test.op]();
-        mockMMU.verify();
+        expect(write8Spy.calledWith(0x2C83, 0)).to.be.true;
       });
 
       it("takes 4 machine cycles", function() {

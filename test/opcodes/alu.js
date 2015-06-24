@@ -7,12 +7,13 @@ var MMU = require('../../lib/mmu');
 var alu = require('../../lib/opcodes/alu');
 
 describe("ALU opcodes", function() {
-  var cpu, mockMMU, ops;
+  var cpu, read8Stub, write8Spy, ops;
 
   beforeEach(function() {
     cpu = new CPU();
     var mmu = new MMU();
-    mockMMU = sinon.mock(mmu);
+    read8Stub = sinon.stub(mmu, 'read8');
+    write8Spy = sinon.spy(mmu, 'write8');
     ops = alu(cpu, mmu);
     cpu.pc = 0x200;
   });
@@ -110,10 +111,9 @@ describe("ALU opcodes", function() {
     });
 
     it("adds value in address HL to A", function() {
-      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3B);
+      read8Stub.withArgs(0xC4B2).returns(0x3B);
       cpu.register.A = 0x08;
       ops[0x86]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x43);
     });
 
@@ -122,28 +122,28 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0xFF;
       ops[0x86]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0x2;
       ops[0x86]();
       expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag is carry from bit 3", function() {
-      mockMMU.expects('read8').returns(0x0F);
+      read8Stub.returns(0x0F);
       cpu.register.A = 0x1;
       ops[0x86]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 7", function() {
-      mockMMU.expects('read8').returns(0xFF);
+      read8Stub.returns(0xFF);
       cpu.register.A = 0x1;
       ops[0x86]();
       expect((cpu.register.F & 0x10) >> 4).to.equal(1);
@@ -152,10 +152,9 @@ describe("ALU opcodes", function() {
 
   describe("ADD A,n", function() {
     it("adds 8-bit immediate value to A", function() {
-      mockMMU.expects('read8').withArgs(0x201).returns(0x3B);
+      read8Stub.withArgs(0x201).returns(0x3B);
       cpu.register.A = 0x08;
       ops[0xC6]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x43);
     });
@@ -165,28 +164,28 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0xFF;
       ops[0xC6]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0x2;
       ops[0xC6]();
       expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag is carry from bit 3", function() {
-      mockMMU.expects('read8').returns(0x0F);
+      read8Stub.returns(0x0F);
       cpu.register.A = 0x1;
       ops[0xC6]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 7", function() {
-      mockMMU.expects('read8').returns(0xFF);
+      read8Stub.returns(0xFF);
       cpu.register.A = 0x1;
       ops[0xC6]();
       expect(cpu.testFlag('C')).to.equal(1);
@@ -293,10 +292,9 @@ describe("ALU opcodes", function() {
     });
 
     it("adds value in address HL + Carry flag to A", function() {
-      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3B);
+      read8Stub.withArgs(0xC4B2).returns(0x3B);
       cpu.register.A = 0x08;
       ops[0x8E]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x44);
     });
 
@@ -305,28 +303,28 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0x00);
+      read8Stub.returns(0x00);
       cpu.register.A = 0xFF;
       ops[0x8E]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0x2;
       ops[0x8E]();
       expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag is carry from bit 3", function() {
-      mockMMU.expects('read8').returns(0x0F);
+      read8Stub.returns(0x0F);
       cpu.register.A = 0x0;
       ops[0x8E]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 7", function() {
-      mockMMU.expects('read8').returns(0xFF);
+      read8Stub.returns(0xFF);
       cpu.register.A = 0x1;
       ops[0x8E]();
       expect((cpu.register.F & 0x10) >> 4).to.equal(1);
@@ -339,10 +337,9 @@ describe("ALU opcodes", function() {
     });
 
     it("adds 8-bit immediate value + Carry flag to A", function() {
-      mockMMU.expects('read8').withArgs(0x201).returns(0x3B);
+      read8Stub.withArgs(0x201).returns(0x3B);
       cpu.register.A = 0x08;
       ops[0xCE]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x44);
     });
@@ -352,28 +349,28 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       cpu.register.A = 0xFF;
       ops[0xCE]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0x2;
       ops[0xCE]();
       expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag is carry from bit 3", function() {
-      mockMMU.expects('read8').returns(0x0F);
+      read8Stub.returns(0x0F);
       cpu.register.A = 0x0;
       ops[0xCE]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry from bit 7", function() {
-      mockMMU.expects('read8').returns(0xFF);
+      read8Stub.returns(0xFF);
       cpu.register.A = 0x0;
       ops[0xCE]();
       expect(cpu.testFlag('C')).to.equal(1);
@@ -483,10 +480,9 @@ describe("ALU opcodes", function() {
     });
 
     it("adds value in address HL to A", function() {
-      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x08);
+      read8Stub.withArgs(0xC4B2).returns(0x08);
       cpu.register.A = 0x39;
       ops[0x96]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x31);
     });
 
@@ -495,21 +491,21 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0x01;
       ops[0x96]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0x2;
       ops[0x96]();
       expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
-      mockMMU.expects('read8').twice().returns(0x08);
+      read8Stub.returns(0x08);
       cpu.register.A = 0x15;
       ops[0x96]();
       expect(cpu.testFlag('H')).to.equal(1);
@@ -520,7 +516,7 @@ describe("ALU opcodes", function() {
     });
 
     it("sets C flag if carry from bit 7", function() {
-      mockMMU.expects('read8').twice().returns(0x08);
+      read8Stub.returns(0x08);
       cpu.register.A = 0x05;
       ops[0x96]();
       expect(cpu.testFlag('C')).to.equal(1);
@@ -533,10 +529,9 @@ describe("ALU opcodes", function() {
 
   describe("SUB A,n", function() {
     it("subtracts 8-bit immediate value from A", function() {
-      mockMMU.expects('read8').withArgs(0x201).returns(0x08);
+      read8Stub.withArgs(0x201).returns(0x08);
       cpu.register.A = 0x18;
       ops[0xD6]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x10);
     });
@@ -546,28 +541,28 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0xFF);
+      read8Stub.returns(0xFF);
       cpu.register.A = 0xFF;
       ops[0xD6]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0x2;
       ops[0xD6]();
       expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
-      mockMMU.expects('read8').returns(0x23);
+      read8Stub.returns(0x23);
       cpu.register.A = 0x31;
       ops[0xD6]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if borrow", function() {
-      mockMMU.expects('read8').returns(0xFF);
+      read8Stub.returns(0xFF);
       cpu.register.A = 0x01;
       ops[0xD6]();
       expect(cpu.testFlag('C')).to.equal(1);
@@ -686,10 +681,9 @@ describe("ALU opcodes", function() {
     });
 
     it("adds value in address HL + Carry flag to A", function() {
-      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x08);
+      read8Stub.withArgs(0xC4B2).returns(0x08);
       cpu.register.A = 0x39;
       ops[0x9E]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x30);
     });
 
@@ -698,21 +692,21 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0x02;
       ops[0x9E]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0x2;
       ops[0x9E]();
       expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
-      mockMMU.expects('read8').twice().returns(0x05);
+      read8Stub.returns(0x05);
       cpu.register.A = 0x15;
       ops[0x9E]();
       expect(cpu.testFlag('H')).to.equal(1);
@@ -723,7 +717,7 @@ describe("ALU opcodes", function() {
     });
 
     it("sets C flag if carry from bit 7", function() {
-      mockMMU.expects('read8').twice().returns(0x05);
+      read8Stub.returns(0x05);
       cpu.register.A = 0x05;
       ops[0x9E]();
       expect(cpu.testFlag('C')).to.equal(1);
@@ -740,10 +734,9 @@ describe("ALU opcodes", function() {
     });
 
     it("subtracts 8-bit immediate value + Carry flag from A", function() {
-      mockMMU.expects('read8').withArgs(0x201).returns(0x08);
+      read8Stub.withArgs(0x201).returns(0x08);
       cpu.register.A = 0x18;
       ops[0xDE]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x0F);
     });
@@ -753,28 +746,28 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0xFE);
+      read8Stub.returns(0xFE);
       cpu.register.A = 0xFF;
       ops[0xDE]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("sets N flag", function() {
-      mockMMU.expects('read8').returns(0x01);
+      read8Stub.returns(0x01);
       cpu.register.A = 0x2;
       ops[0xDE]();
       expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
-      mockMMU.expects('read8').returns(0x21);
+      read8Stub.returns(0x21);
       cpu.register.A = 0x31;
       ops[0xDE]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if borrow", function() {
-      mockMMU.expects('read8').returns(0xF0);
+      read8Stub.returns(0xF0);
       cpu.register.A = 0x01;
       ops[0xDE]();
       expect(cpu.testFlag('C')).to.equal(1);
@@ -871,13 +864,12 @@ describe("ALU opcodes", function() {
     beforeEach(function() {
       cpu.register.H = 0xC4;
       cpu.register.L = 0xB2;
-      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x34);
+      read8Stub.withArgs(0xC4B2).returns(0x34);
     });
 
     it("logically ANDs A with value at address HL", function() {
       cpu.register.A = 0xF2;
       ops[0xA6]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x30);
     });
 
@@ -912,13 +904,12 @@ describe("ALU opcodes", function() {
 
   describe("AND n", function() {
     beforeEach(function() {
-      mockMMU.expects('read8').withArgs(0x201).returns(0x34);
+      read8Stub.withArgs(0x201).returns(0x34);
     });
 
     it("logically ANDs A with 8-bit immediate value n", function() {
       cpu.register.A = 0xF2;
       ops[0xE6]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x30);
     });
@@ -1043,9 +1034,8 @@ describe("ALU opcodes", function() {
     });
 
     it("logically ORs A with value in address HL", function() {
-      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3F);
+      read8Stub.withArgs(0xC4B2).returns(0x3F);
       ops[0xB6]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0xFF);
     });
 
@@ -1054,26 +1044,26 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       cpu.register.A = 0;
       ops[0xB6]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       ops[0xB6]();
       expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("resets H flag", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       ops[0xB6]();
       expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("resets C flag", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       ops[0xB6]();
       expect(cpu.testFlag('C')).to.equal(0);
     });
@@ -1085,9 +1075,8 @@ describe("ALU opcodes", function() {
     });
 
     it("logically ORs A with 8-bit immediate value", function() {
-      mockMMU.expects('read8').withArgs(0x201).returns(0x3F);
+      read8Stub.withArgs(0x201).returns(0x3F);
       ops[0xF6]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0xFF);
       expect(cpu.pc).to.equal(0x201);
     });
@@ -1097,26 +1086,26 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       cpu.register.A = 0;
       ops[0xF6]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N flag", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       ops[0xF6]();
       expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("resets H flag", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       ops[0xF6]();
       expect(cpu.testFlag('H')).to.equal(0);
     });
 
     it("resets C flag", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       ops[0xF6]();
       expect(cpu.testFlag('C')).to.equal(0);
     });
@@ -1209,12 +1198,11 @@ describe("ALU opcodes", function() {
       cpu.register.H = 0xC4;
       cpu.register.L = 0xB2;
       cpu.register.A = 0xF2;
-      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3F);
+      read8Stub.withArgs(0xC4B2).returns(0x3F);
     });
 
     it("logically XORs A with value in address HL", function() {
       ops[0xAE]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0xCD);
     });
 
@@ -1247,12 +1235,11 @@ describe("ALU opcodes", function() {
   describe("OR n", function() {
     beforeEach(function() {
       cpu.register.A = 0xF2;
-      mockMMU.expects('read8').withArgs(0x201).returns(0x3F);
+      read8Stub.withArgs(0x201).returns(0x3F);
     });
 
     it("logically ORs A with 8-bit immediate value", function() {
       ops[0xEE]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0xCD);
       expect(cpu.pc).to.equal(0x201);
     });
@@ -1382,10 +1369,9 @@ describe("ALU opcodes", function() {
     });
 
     it("compares the value at address HL to A", function() {
-      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3F);
+      read8Stub.withArgs(0xC4B2).returns(0x3F);
       cpu.register.A = 0x35;
       ops[0xBE]();
-      mockMMU.verify();
     });
 
     it("takes 2 machine cycles", function() {
@@ -1393,7 +1379,7 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if A = value at address HL", function() {
-      mockMMU.expects('read8').twice().withArgs(0xC4B2).returns(0x3F);
+      read8Stub.withArgs(0xC4B2).returns(0x3F);
       cpu.register.A = 0x3F;
       ops[0xBE]();
       expect(cpu.testFlag('Z')).to.equal(1);
@@ -1404,21 +1390,21 @@ describe("ALU opcodes", function() {
     });
 
     it("sets N flag", function() {
-      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3F);
+      read8Stub.withArgs(0xC4B2).returns(0x3F);
       cpu.register.A = 0x3F;
       ops[0xBE]();
       expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
-      mockMMU.expects('read8').withArgs(0xC4B2).returns(0x3F);
+      read8Stub.withArgs(0xC4B2).returns(0x3F);
       cpu.register.A = 0x43;
       ops[0xBE]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if A < value at address HL", function() {
-      mockMMU.expects('read8').twice().withArgs(0xC4B2).returns(0x3F);
+      read8Stub.withArgs(0xC4B2).returns(0x3F);
       cpu.register.A = 0x13;
       ops[0xBE]();
       expect(cpu.testFlag('C')).to.equal(1);
@@ -1431,10 +1417,9 @@ describe("ALU opcodes", function() {
 
   describe("CP n", function() {
     it("compares 8-bit immediate value n to A", function() {
-      mockMMU.expects('read8').withArgs(0x201).returns(0x3F);
+      read8Stub.withArgs(0x201).returns(0x3F);
       cpu.register.A = 0x35;
       ops[0xFE]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
     });
 
@@ -1443,7 +1428,7 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if A = 8-bit immediate value n", function() {
-      mockMMU.expects('read8').twice().returns(0x3F);
+      read8Stub.returns(0x3F);
       cpu.register.A = 0x3F;
       ops[0xFE]();
       expect(cpu.testFlag('Z')).to.equal(1);
@@ -1454,21 +1439,21 @@ describe("ALU opcodes", function() {
     });
 
     it("sets N flag", function() {
-      mockMMU.expects('read8').withArgs(0x201).returns(0x3F);
+      read8Stub.withArgs(0x201).returns(0x3F);
       cpu.register.A = 0x3F;
       ops[0xFE]();
       expect(cpu.testFlag('N')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 4", function() {
-      mockMMU.expects('read8').withArgs(0x201).returns(0x3F);
+      read8Stub.withArgs(0x201).returns(0x3F);
       cpu.register.A = 0x43;
       ops[0xFE]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if A < 8-bit immediate value n", function() {
-      mockMMU.expects('read8').twice().returns(0x3F);
+      read8Stub.returns(0x3F);
       cpu.register.A = 0x13;
       ops[0xFE]();
       expect(cpu.testFlag('C')).to.equal(1);
@@ -1526,10 +1511,8 @@ describe("ALU opcodes", function() {
     });
 
     it("increments the value at address HL", function() {
-      mockMMU.expects('read8').once().withArgs(0xB25E).returns(0x50);
-      mockMMU.expects('write8').once().withArgs(0xB25E, 0x51);
+      read8Stub.withArgs(0xB25E).returns(0x50);
       ops[0x34]();
-      mockMMU.verify();
     });
 
     it("takes 3 machine cycles", function() {
@@ -1537,8 +1520,7 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').once().withArgs(0xB25E).returns(0xFF);
-      // mockMMU.expects('write8').once().withArgs(0xB25E, 0x51);
+      read8Stub.withArgs(0xB25E).returns(0xFF);
       ops[0x34]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
@@ -1549,7 +1531,7 @@ describe("ALU opcodes", function() {
     });
 
     it("sets H flag if carry from bit 3", function() {
-      mockMMU.expects('read8').returns(0x3F);
+      read8Stub.returns(0x3F);
       ops[0x34]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
@@ -1602,10 +1584,9 @@ describe("ALU opcodes", function() {
     });
 
     it("increments the value at address HL", function() {
-      mockMMU.expects('read8').once().withArgs(0xB25E).returns(0x50);
-      mockMMU.expects('write8').once().withArgs(0xB25E, 0x4F);
+      read8Stub.withArgs(0xB25E).returns(0x50);
       ops[0x35]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0xB25E, 0x4F)).to.be.true;
     });
 
     it("takes 3 machine cycles", function() {
@@ -1613,7 +1594,7 @@ describe("ALU opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').once().withArgs(0xB25E).returns(0x01);
+      read8Stub.withArgs(0xB25E).returns(0x01);
       ops[0x35]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
@@ -1624,7 +1605,7 @@ describe("ALU opcodes", function() {
     });
 
     it("sets H flag if borrow from bit 4", function() {
-      mockMMU.expects('read8').returns(0x30);
+      read8Stub.returns(0x30);
       ops[0x35]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
@@ -1745,10 +1726,9 @@ describe("ALU opcodes", function() {
 
   describe("ADD SP, n", function() {
     it("adds signed 8-bit immediate value to SP", function() {
-      mockMMU.expects('read8').once().withArgs(0x201).returns(0x0A);
+      read8Stub.withArgs(0x201).returns(0x0A);
       cpu.sp = 0xAB90;
       ops[0xE8]();
-      mockMMU.verify();
       expect(cpu.sp).to.equal(0xAB9A);
       expect(cpu.pc).to.equal(0x201);
     });
@@ -1758,50 +1738,49 @@ describe("ALU opcodes", function() {
     });
 
     it("adds signed 8-bit immediate value to SP (negative n)", function() {
-      mockMMU.expects('read8').once().withArgs(0x201).returns(0xFE);
+      read8Stub.withArgs(0x201).returns(0xFE);
       cpu.sp = 0xAB90;
       ops[0xE8]();
-      mockMMU.verify();
       expect(cpu.sp).to.equal(0xAB8E);
     });
 
     it("resets Z flag", function() {
-      mockMMU.expects('read8').returns(0x0A);
+      read8Stub.returns(0x0A);
       cpu.sp = 0xAB90;
       ops[0xE8]();
       expect(cpu.testFlag('Z')).to.equal(0);
     });
 
     it("resets N flag", function() {
-      mockMMU.expects('read8').returns(0x0A);
+      read8Stub.returns(0x0A);
       cpu.sp = 0xAB90;
       ops[0xE8]();
       expect(cpu.testFlag('N')).to.equal(0);
     });
 
     it("sets H flag if carry from bit 11", function() {
-      mockMMU.expects('read8').returns(0x7F);
+      read8Stub.returns(0x7F);
       cpu.sp = 0x1FFA;
       ops[0xE8]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets H flag if borrow from bit 12", function() {
-      mockMMU.expects('read8').returns(0x80);
+      read8Stub.returns(0x80);
       cpu.sp = 0x8001;
       ops[0xE8]();
       expect(cpu.testFlag('H')).to.equal(1);
     });
 
     it("sets C flag if carry", function() {
-      mockMMU.expects('read8').returns(0x7F);
+      read8Stub.returns(0x7F);
       cpu.sp = 0xFFFA;
       ops[0xE8]();
       expect(cpu.testFlag('C')).to.equal(1);
     });
 
     it("sets C flag if borrow", function() {
-      mockMMU.expects('read8').returns(0xF0);
+      read8Stub.returns(0xF0);
       cpu.sp = 0x0001;
       ops[0xE8]();
       expect(cpu.testFlag('C')).to.equal(1);
