@@ -6,11 +6,11 @@ var CPU = require('../lib/cpu');
 var MMU = require('../lib/mmu');
 
 describe("CPU", function() {
-  var cpu, mockMMU;
+  var cpu, read8Stub;
 
   beforeEach(function() {
     var mmu = new MMU();
-    mockMMU = sinon.mock(mmu);
+    read8Stub = sinon.stub(mmu, 'read8');
     cpu = new CPU(mmu);
   });
 
@@ -58,7 +58,7 @@ describe("CPU", function() {
 
     it("executes the instruction pointed to by PC", function() {
       cpu.instructions[0x00] = function() { return 2; };
-      mockMMU.expects('read8').once().withArgs(0x200).returns(0x00);
+      read8Stub.withArgs(0x200).returns(0x00);
       cpu.execute();
 
       expect(cpu.pc).to.equal(0x201);
@@ -68,8 +68,8 @@ describe("CPU", function() {
 
     it("fetches next byte if instruction is 0xCB", function() {
       cpu.instructions[0xCB00] = function() { return 2; };
-      mockMMU.expects('read8').once().withArgs(0x200).returns(0xCB);
-      mockMMU.expects('read8').once().withArgs(0x201).returns(0x00);
+      read8Stub.withArgs(0x200).returns(0xCB);
+      read8Stub.withArgs(0x201).returns(0x00);
       cpu.execute();
 
       expect(cpu.pc).to.equal(0x202);
@@ -79,7 +79,7 @@ describe("CPU", function() {
 
     it("does not increment PC if incrementPC flag is false", function() {
       cpu.instructions[0x00] = function() { cpu.incrementPC = false; return 2; };
-      mockMMU.expects('read8').once().withArgs(0x200).returns(0x00);
+      read8Stub.withArgs(0x200).returns(0x00);
       cpu.execute();
 
       expect(cpu.pc).to.equal(0x200);
@@ -89,7 +89,7 @@ describe("CPU", function() {
 
     it("sets inBIOS flag of MMU to false when program counter reaches 100h", function() {
       cpu.instructions[0x00] = function() { return 2; };
-      mockMMU.expects('read8').once().withArgs(0xFF).returns(0x00);
+      read8Stub.withArgs(0xFF).returns(0x00);
       cpu.pc = 0xFF;
       cpu.execute();
 
@@ -98,7 +98,7 @@ describe("CPU", function() {
 
     it("returns the time of execution as T clocks", function() {
       cpu.instructions[0x00] = function() { return 2; };
-      mockMMU.expects('read8').once().withArgs(0x200).returns(0x00);
+      read8Stub.withArgs(0x200).returns(0x00);
 
       expect(cpu.execute()).to.equal(8);
     });

@@ -6,11 +6,12 @@ var MMU = require('../lib/mmu');
 var GPU = require('../lib/gpu');
 
 describe("MMU", function() {
-  var mmu, mockGPU;
+  var mmu, gpuReadStub, gpuWriteSpy;
 
   beforeEach(function() {
     var gpu = new GPU();
-    mockGPU = sinon.mock(gpu);
+    gpuReadStub = sinon.stub(gpu, 'read');
+    gpuWriteSpy = sinon.spy(gpu, 'write');
     mmu = new MMU(gpu);
   });
 
@@ -59,9 +60,8 @@ describe("MMU", function() {
     });
 
     it("reads from VRAM when address is between 8000h and A000h", function() {
-      mockGPU.expects('read').once().withArgs(0x8050).returns(0x34);
+      gpuReadStub.withArgs(0x8050).returns(0x34);
       expect(mmu.read8(0x8050)).to.equal(0x34);
-      mockGPU.verify();
     });
 
     it("reads from switchable RAM bank when address is between A000h and C000h", function() {
@@ -82,12 +82,12 @@ describe("MMU", function() {
     });
 
     it("reads from sprite attribute memory when address between FE00h and FEA0h", function() {
-      mockGPU.expects('read').once().withArgs(0xFE90).returns(0xAB);
+      gpuReadStub.withArgs(0xFE90).returns(0xAB);
       expect(mmu.read8(0xFE90)).to.equal(0xAB);
     });
 
     it("reads from gpu registers when address between FF40h and FF4Bh", function() {
-      mockGPU.expects('read').once().withArgs(0xFF45).returns(0xAB);
+      gpuReadStub.withArgs(0xFF45).returns(0xAB);
       expect(mmu.read8(0xFF45)).to.equal(0xAB);
     });
 
@@ -113,9 +113,8 @@ describe("MMU", function() {
     });
 
     it("writes to VRAM when address is between 8000h and A000h", function() {
-      mockGPU.expects('write').once().withArgs(0x8050, 0x34);
       mmu.write8(0x8050, 0x34);
-      mockGPU.verify();
+      expect(gpuWriteSpy.calledWith(0x8050, 0x34)).to.be.true;
     });
 
     it("writes to switchable RAM bank when address is between A000h and C000h", function() {
@@ -136,15 +135,13 @@ describe("MMU", function() {
     });
 
     it("writes to sprite attribute memory when address between FE00h and FEA0h", function() {
-      mockGPU.expects('write').once().withArgs(0xFE90, 0xAB);
       mmu.write8(0xFE90, 0xAB);
-      mockGPU.verify();
+      expect(gpuWriteSpy.calledWith(0xFE90, 0xAB)).to.be.true;
     });
 
     it("writes to gpu registers when address between FF40h and FF4Bh", function() {
-      mockGPU.expects('write').once().withArgs(0xFF45, 0xAB);
       mmu.write8(0xFF45, 0xAB);
-      mockGPU.verify();
+      expect(gpuWriteSpy.calledWith(0xFF45, 0xAB)).to.be.true;
     });
 
     it("writes to zero-page memory when address greater or equal to FF80h", function() {
