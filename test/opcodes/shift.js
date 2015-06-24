@@ -7,12 +7,13 @@ var MMU = require('../../lib/mmu');
 var shifts = require('../../lib/opcodes/shift');
 
 describe("Shift opcodes", function() {
-  var cpu, mockMMU, ops;
+  var cpu, read8Stub, write8Spy, ops;
 
   beforeEach(function() {
     cpu = new CPU();
     var mmu = new MMU();
-    mockMMU = sinon.mock(mmu);
+    read8Stub = sinon.stub(mmu, 'read8');
+    write8Spy = sinon.spy(mmu, 'write8');
     ops = shifts(cpu, mmu);
     cpu.pc = 0x200;
   });
@@ -170,10 +171,9 @@ describe("Shift opcodes", function() {
     });
 
     it("rotates the value in address HL left, copying bit 7 into carry flag and to bit 0", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0xB4);
-      mockMMU.expects('write8').once().withArgs(0x2C83, 0x69);
+      read8Stub.withArgs(0x2C83).returns(0xB4);
       ops[0xCB06]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x2C83, 0x69)).to.be.true;
       expect(cpu.testFlag('C')).to.equal(1);
     });
 
@@ -182,7 +182,7 @@ describe("Shift opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
+      read8Stub.withArgs(0x2C83).returns(0);
       ops[0xCB06]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
@@ -241,11 +241,10 @@ describe("Shift opcodes", function() {
     });
 
     it("rotates the value in address HL left through carry flag", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0xB4);
-      mockMMU.expects('write8').once().withArgs(0x2C83, 0x69);
+      read8Stub.withArgs(0x2C83).returns(0xB4);
       cpu.setFlag('C');
       ops[0xCB16]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x2C83, 0x69)).to.be.true;
       expect(cpu.testFlag('C')).to.equal(1);
     });
 
@@ -254,7 +253,7 @@ describe("Shift opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
+      read8Stub.withArgs(0x2C83).returns(0);
       ops[0xCB16]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
@@ -312,10 +311,9 @@ describe("Shift opcodes", function() {
     });
 
     it("rotates the value in address HL left, copying bit 7 into carry flag and to bit 0", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0x11);
-      mockMMU.expects('write8').once().withArgs(0x2C83, 0x88);
+      read8Stub.withArgs(0x2C83).returns(0x11);
       ops[0xCB0E]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x2C83, 0x88)).to.be.true;
       expect(cpu.testFlag('C')).to.equal(1);
     });
 
@@ -324,7 +322,7 @@ describe("Shift opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
+      read8Stub.withArgs(0x2C83).returns(0);
       ops[0xCB0E]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
@@ -382,10 +380,9 @@ describe("Shift opcodes", function() {
     });
 
     it("rotates the value in address HL left, copying bit 7 into carry flag and to bit 0", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0x11);
-      mockMMU.expects('write8').once().withArgs(0x2C83, 0x08);
+      read8Stub.withArgs(0x2C83).returns(0x11);
       ops[0xCB1E]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x2C83, 0x08)).to.be.true;
       expect(cpu.testFlag('C')).to.equal(1);
     });
 
@@ -394,7 +391,7 @@ describe("Shift opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0);
+      read8Stub.withArgs(0x2C83).returns(0);
       ops[0xCB1E]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
@@ -452,10 +449,9 @@ describe("Shift opcodes", function() {
     });
 
     it("shifts value at address HL left into carry flag", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0x88);
-      mockMMU.expects('write8').once().withArgs(0x2C83, 0x10);
+      read8Stub.withArgs(0x2C83).returns(0x88);
       ops[0xCB26]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x2C83, 0x10)).to.be.true;
       expect(cpu.testFlag('C')).to.equal(1);
     });
 
@@ -464,7 +460,7 @@ describe("Shift opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       ops[0xCB26]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
@@ -522,10 +518,9 @@ describe("Shift opcodes", function() {
     });
 
     it("shifts value at address HL right into carry flag, preserving most significant bit", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0x91);
-      mockMMU.expects('write8').once().withArgs(0x2C83, 0xC8);
+      read8Stub.withArgs(0x2C83).returns(0x91);
       ops[0xCB2E]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x2C83, 0xC8)).to.be.true;
       expect(cpu.testFlag('C')).to.equal(1);
     });
 
@@ -534,7 +529,7 @@ describe("Shift opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       ops[0xCB2E]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
@@ -592,10 +587,9 @@ describe("Shift opcodes", function() {
     });
 
     it("shifts value at address HL right into carry flag", function() {
-      mockMMU.expects('read8').once().withArgs(0x2C83).returns(0x91);
-      mockMMU.expects('write8').once().withArgs(0x2C83, 0x48);
+      read8Stub.withArgs(0x2C83).returns(0x91);
       ops[0xCB3E]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x2C83, 0x48)).to.be.true;
       expect(cpu.testFlag('C')).to.equal(1);
     });
 
@@ -604,7 +598,7 @@ describe("Shift opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0);
+      read8Stub.returns(0);
       ops[0xCB3E]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });

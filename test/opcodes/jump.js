@@ -7,7 +7,7 @@ var MMU = require('../../lib/mmu');
 var jump = require('../../lib/opcodes/jump');
 
 describe("Jump opcodes", function() {
-  var cpu, mockMMU, read8Stub, read16Stub, write16Spy, ops;
+  var cpu, read8Stub, read16Stub, write16Spy, ops;
 
   beforeEach(function() {
     cpu = new CPU();
@@ -15,7 +15,6 @@ describe("Jump opcodes", function() {
     read8Stub = sinon.stub(mmu, 'read8');
     read16Stub = sinon.stub(mmu, 'read16');
     write16Spy = sinon.spy(mmu, 'write16');
-    mockMMU = sinon.mock(mmu);
     ops = jump(cpu, mmu);
     cpu.pc = 0x200;
   });

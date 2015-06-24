@@ -7,12 +7,13 @@ var MMU = require('../../lib/mmu');
 var misc = require('../../lib/opcodes/misc');
 
 describe("Misc opcodes", function() {
-  var cpu, mockMMU, ops;
+  var cpu, read8Stub, write8Spy, ops;
 
   beforeEach(function() {
     cpu = new CPU();
     var mmu = new MMU();
-    mockMMU = sinon.mock(mmu);
+    read8Stub = sinon.stub(mmu, 'read8');
+    write8Spy = sinon.spy(mmu, 'write8');
     ops = misc(cpu, mmu);
     cpu.pc = 0x200;
   });
@@ -63,10 +64,9 @@ describe("Misc opcodes", function() {
     });
 
     it("swaps upper and lower nibbles of value at address HL", function() {
-      mockMMU.expects('read8').once().withArgs(0x2E93).returns(0x15);
-      mockMMU.expects('write8').once().withArgs(0x2E93, 0x51);
+      read8Stub.withArgs(0x2E93).returns(0x15);
       ops[0xCB36]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x2E93, 0x51)).to.be.true;
     });
 
     it("takes 4 machine cycles", function() {
@@ -74,13 +74,13 @@ describe("Misc opcodes", function() {
     });
 
     it("sets Z flag if result is zero", function() {
-      mockMMU.expects('read8').returns(0x00);
+      read8Stub.returns(0x00);
       ops[0xCB36]();
       expect(cpu.testFlag('Z')).to.equal(1);
     });
 
     it("resets N, H, and C flags", function() {
-      mockMMU.expects('read8').returns(0x15);
+      read8Stub.returns(0x15);
       cpu.setFlag('N');
       cpu.setFlag('H');
       cpu.setFlag('C');

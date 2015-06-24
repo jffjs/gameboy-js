@@ -7,12 +7,15 @@ var MMU = require('../../lib/mmu');
 var loads = require('../../lib/opcodes/load');
 
 describe("Load opcodes", function() {
-  var cpu, mockMMU, ops;
+  var cpu, read8Stub, write8Spy, read16Stub, write16Spy, ops;
 
   beforeEach(function() {
     cpu = new CPU();
     var mmu = new MMU();
-    mockMMU = sinon.mock(mmu);
+    read8Stub = sinon.stub(mmu, 'read8');
+    write8Spy = sinon.spy(mmu, 'write8');
+    read16Stub = sinon.stub(mmu, 'read16');
+    write16Spy = sinon.spy(mmu, 'write16');
     ops = loads(cpu, mmu);
     cpu.pc = 0x200;
   });
@@ -28,15 +31,14 @@ describe("Load opcodes", function() {
   ].forEach(function(i) {
     describe("LD " + i.dest + ",n", function() {
       it("loads immediate 8-bit value into register " + i.dest, function() {
-        mockMMU.expects('read8').once().withArgs(0x201).returns(0x1A);
+        read8Stub.withArgs(0x201).returns(0x1A);
         ops[i.op]();
-        mockMMU.verify();
         expect(cpu.register[i.dest]).to.equal(0x1A);
         expect(cpu.pc).to.equal(0x201);
       });
 
       it("takes 2 machine cycles", function() {
-        mockMMU.expects('read8').once().withArgs(0x201).returns(0x1A);
+        read8Stub.withArgs(0x201).returns(0x1A);
         expect(ops[i.op]()).to.equal(2);
       });
     });
@@ -120,7 +122,7 @@ describe("Load opcodes", function() {
   ].forEach(function(i) {
     describe("LD " + i.dest + ",(HL)", function() {
       beforeEach(function() {
-        mockMMU.expects('read8').once().withArgs(0x31AB).returns(0x30);
+        read8Stub.withArgs(0x31AB).returns(0x30);
         cpu.register[i.dest] = 0x33;
         cpu.register.H = 0x31;
         cpu.register.L = 0xAB;
@@ -129,7 +131,6 @@ describe("Load opcodes", function() {
       it("loads value from address in HL into " + i.dest, function() {
         ops[i.op]();
         expect(cpu.register[i.dest]).to.equal(0x30);
-        mockMMU.verify();
       });
 
       it("takes 2 machine cycles", function() {
@@ -157,9 +158,8 @@ describe("Load opcodes", function() {
       });
 
       it("loads " + i.src + " into address pointed to by HL", function() {
-        mockMMU.expects('write8').once().withArgs(0x257B, cpu.register[i.src]);
         ops[i.op]();
-        mockMMU.verify();
+        expect(write8Spy.calledWith(0x257B, cpu.register[i.src])).to.be.true;
       });
 
       it("takes 2 machine cycles", function() {
@@ -170,15 +170,14 @@ describe("Load opcodes", function() {
 
   describe("LD (HL),n", function() {
     beforeEach(function() {
-      mockMMU.expects('read8').once().withArgs(0x201).returns(0x88);
-      mockMMU.expects('write8').once().withArgs(0x257B, 0x88);
+      read8Stub.withArgs(0x201).returns(0x88);
       cpu.register.H = 0x25;
       cpu.register.L = 0x7B;
     });
 
     it("loads 8-bit immediate value into address pointed at by HL", function() {
       ops[0x36]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x257B, 0x88)).to.be.true;
     });
 
     it("takes 3 machine cycles", function() {
@@ -194,9 +193,8 @@ describe("Load opcodes", function() {
     });
 
     it("loads A into the address pointed at by BC", function() {
-      mockMMU.expects('write8').once().withArgs(0x3345, cpu.register.A);
       ops[0x02]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x3345, cpu.register.A)).to.be.true;
     });
 
     it("takes 2 machine cycles", function() {
@@ -212,9 +210,8 @@ describe("Load opcodes", function() {
     });
 
     it("loads A into the address pointed at by DE", function() {
-      mockMMU.expects('write8').once().withArgs(0x3345, cpu.register.A);
       ops[0x12]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x3345, cpu.register.A)).to.be.true;
     });
 
     it("takes 2 machine cycles", function() {
@@ -224,14 +221,13 @@ describe("Load opcodes", function() {
 
   describe("LD (nn),A", function() {
     beforeEach(function() {
-      mockMMU.expects('read16').once().withArgs(0x0201).returns(0xA980);
+      read16Stub.withArgs(0x0201).returns(0xA980);
       cpu.register.A = 0xBC;
     });
 
     it("loads value of A into address pointed at by 16-bit immediate value", function() {
-      mockMMU.expects('write8').once().withArgs(0xA980, 0xBC);
       ops[0xEA]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0xA980, 0xBC)).to.be.true;
       expect(cpu.pc).to.equal(0x202);
     });
 
@@ -242,14 +238,13 @@ describe("Load opcodes", function() {
 
   describe("LD A,(BC)", function() {
     beforeEach(function() {
-      mockMMU.expects('read8').once().withArgs(0x3345).returns(0x55);
+      read8Stub.withArgs(0x3345).returns(0x55);
       cpu.register.B = 0x33;
       cpu.register.C = 0x45;
     });
 
     it("loads value from address in BC into A", function() {
       ops[0x0A]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x55);
     });
 
@@ -260,14 +255,13 @@ describe("Load opcodes", function() {
 
   describe("LD A,(DE)", function() {
     beforeEach(function() {
-      mockMMU.expects('read8').once().withArgs(0x3345).returns(0x55);
+      read8Stub.withArgs(0x3345).returns(0x55);
       cpu.register.D = 0x33;
       cpu.register.E = 0x45;
     });
 
     it("loads value from address in DE into A", function() {
       ops[0x1A]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x55);
     });
 
@@ -278,13 +272,12 @@ describe("Load opcodes", function() {
 
   describe("LD A,(nn)", function() {
     beforeEach(function() {
-      mockMMU.expects('read16').once().withArgs(0x201).returns(0x5544);
-      mockMMU.expects('read8').once().returns(0x23);
+      read16Stub.withArgs(0x201).returns(0x5544);
+      read8Stub.returns(0x23);
     });
 
     it("loads value from address in 16-bit immediate value into A", function() {
       ops[0xFA]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x23);
       expect(cpu.pc).to.equal(0x202);
     });
@@ -296,13 +289,12 @@ describe("Load opcodes", function() {
 
   describe("LDH A,(C)", function() {
     beforeEach(function() {
-      mockMMU.expects('read8').once().withArgs(0xFF08).returns(0x34);
+      read8Stub.withArgs(0xFF08).returns(0x34);
       cpu.register.C = 0x08;
     });
 
     it("loads value at address $FF00 + C into A", function() {
       ops[0xF2]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x34);
     });
 
@@ -313,11 +305,10 @@ describe("Load opcodes", function() {
 
   describe("LDH (C),A", function() {
     it("loads A into address $FF00 + C", function() {
-      mockMMU.expects('write8').once().withArgs(0xFF08, 0x44);
       cpu.register.A = 0x44;
       cpu.register.C = 0x08;
       ops[0xE2]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0xFF08, 0x44)).to.be.true;
     });
 
     it("takes 2 machine cycles", function() {
@@ -327,11 +318,10 @@ describe("Load opcodes", function() {
 
   describe("LDD A,(HL)", function() {
     it("loads value at address HL into A and decrements HL", function() {
-      mockMMU.expects('read8').once().withArgs(0x72B6).returns(0x78);
+      read8Stub.withArgs(0x72B6).returns(0x78);
       cpu.register.H = 0x72;
       cpu.register.L = 0xB6;
       ops[0x3A]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x78);
       expect(cpu.register.H).to.equal(0x72);
       expect(cpu.register.L).to.equal(0xB5);
@@ -344,12 +334,11 @@ describe("Load opcodes", function() {
 
   describe("LDD (HL),A", function() {
     it("loads A into address HL and decrements HL", function() {
-      mockMMU.expects('write8').once().withArgs(0x72B6, 0x10);
       cpu.register.A = 0x10;
       cpu.register.H = 0x72;
       cpu.register.L = 0xB6;
       ops[0x32]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x72B6, 0x10)).to.be.true;
       expect(cpu.register.H).to.equal(0x72);
       expect(cpu.register.L).to.equal(0xB5);
     });
@@ -361,11 +350,10 @@ describe("Load opcodes", function() {
 
   describe("LDI A,(HL)", function() {
     it("loads value at address HL into A and increments HL", function() {
-      mockMMU.expects('read8').once().withArgs(0x72B6).returns(0x78);
+      read8Stub.withArgs(0x72B6).returns(0x78);
       cpu.register.H = 0x72;
       cpu.register.L = 0xB6;
       ops[0x2A]();
-      mockMMU.verify();
       expect(cpu.register.A).to.equal(0x78);
       expect(cpu.register.H).to.equal(0x72);
       expect(cpu.register.L).to.equal(0xB7);
@@ -378,12 +366,11 @@ describe("Load opcodes", function() {
 
   describe("LDI (HL),A", function() {
     it("loads A into address HL and increments HL", function() {
-      mockMMU.expects('write8').once().withArgs(0x72B6, 0x10);
       cpu.register.A = 0x10;
       cpu.register.H = 0x72;
       cpu.register.L = 0xB6;
       ops[0x22]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0x72B6, 0x10)).to.be.true;
       expect(cpu.register.H).to.equal(0x72);
       expect(cpu.register.L).to.equal(0xB7);
     });
@@ -395,11 +382,10 @@ describe("Load opcodes", function() {
 
   describe("LDH (n),A", function() {
     it("loads A into address $FF00 + 8-bit immediate value n", function() {
-      mockMMU.expects('write8').once().withArgs(0xFF06, 0xC7);
-      mockMMU.expects('read8').once().withArgs(0x201).returns(0x06);
+      read8Stub.withArgs(0x201).returns(0x06);
       cpu.register.A = 0xC7;
       ops[0xE0]();
-      mockMMU.verify();
+      expect(write8Spy.calledWith(0xFF06, 0xC7)).to.be.true;
       expect(cpu.pc).to.equal(0x201);
     });
 
@@ -410,11 +396,10 @@ describe("Load opcodes", function() {
 
   describe("LDH A,(n)", function() {
     it("loads value from address $FF00 + 8-bit immediate value n into A", function() {
-      mockMMU.expects('read8').once().withArgs(0x201).returns(0x06);//.onCall(0).withArgs(0xFF06).onCall(1);
-      mockMMU.expects('read8').once().withArgs(0xFF06).returns(0x06);
+      read8Stub.withArgs(0x201).returns(0x06);//.onCall(0).withArgs(0xFF06).onCall(1);
+      read8Stub.withArgs(0xFF06).returns(0x06);
       cpu.register.A = 0xC7;
       ops[0xF0]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.A).to.equal(0x06);
     });
@@ -426,9 +411,8 @@ describe("Load opcodes", function() {
 
   describe("LD BC,nn", function() {
     it("loads 16-bit immediate value into BC", function() {
-      mockMMU.expects('read16').once().withArgs(0x201).returns(0x1234);
+      read16Stub.withArgs(0x201).returns(0x1234);
       ops[0x01]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x202);
       expect(cpu.register.B).to.equal(0x12);
       expect(cpu.register.C).to.equal(0x34);
@@ -441,9 +425,8 @@ describe("Load opcodes", function() {
 
   describe("LD DE,nn", function() {
     it("loads 16-bit immediate value into DE", function() {
-      mockMMU.expects('read16').once().withArgs(0x201).returns(0x1234);
+      read16Stub.withArgs(0x201).returns(0x1234);
       ops[0x11]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x202);
       expect(cpu.register.D).to.equal(0x12);
       expect(cpu.register.E).to.equal(0x34);
@@ -456,9 +439,8 @@ describe("Load opcodes", function() {
 
   describe("LD HL,nn", function() {
     it("loads 16-bit immediate value into HL", function() {
-      mockMMU.expects('read16').once().withArgs(0x201).returns(0x1234);
+      read16Stub.withArgs(0x201).returns(0x1234);
       ops[0x21]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x202);
       expect(cpu.register.H).to.equal(0x12);
       expect(cpu.register.L).to.equal(0x34);
@@ -471,9 +453,8 @@ describe("Load opcodes", function() {
 
   describe("LD SP,nn", function() {
     it("loads 16-bit immediate value into stack pointer", function() {
-      mockMMU.expects('read16').once().withArgs(0x201).returns(0x1234);
+      read16Stub.withArgs(0x201).returns(0x1234);
       ops[0x31]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x202);
       expect(cpu.sp).to.equal(0x1234);
     });
@@ -498,20 +479,18 @@ describe("Load opcodes", function() {
 
   describe("LDHL SP, n", function() {
     it("puts SP + 8-bit immediate signed value into HL", function() {
-      mockMMU.expects('read8').once().withArgs(0x201).returns(0x0A);
+      read8Stub.withArgs(0x201).returns(0x0A);
       cpu.sp = 0xAB90;
       ops[0xF8]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.H).to.equal(0xAB);
       expect(cpu.register.L).to.equal(0x9A);
     });
 
     it("puts SP + 8-bit immediate signed value into HL (negative n)", function() {
-      mockMMU.expects('read8').once().withArgs(0x201).returns(0xFE);
+      read8Stub.withArgs(0x201).returns(0xFE);
       cpu.sp = 0xAB90;
       ops[0xF8]();
-      mockMMU.verify();
       expect(cpu.pc).to.equal(0x201);
       expect(cpu.register.H).to.equal(0xAB);
       expect(cpu.register.L).to.equal(0x8E);
@@ -519,7 +498,7 @@ describe("Load opcodes", function() {
     });
 
     it("resets Z and N flags", function() {
-      mockMMU.expects('read8').returns(0x0A);
+      read8Stub.returns(0x0A);
       cpu.sp = 0xAB90;
       cpu.register.F = 0xC0;
       ops[0xF8]();
@@ -527,7 +506,7 @@ describe("Load opcodes", function() {
     });
 
     it("sets C flag when overflowing 0xFFFF", function() {
-      mockMMU.expects('read8').returns(0x7F);
+      read8Stub.returns(0x7F);
       cpu.sp = 0xFFF0;
       ops[0xF8]();
       expect(cpu.register.H).to.equal(0x00);
@@ -536,14 +515,14 @@ describe("Load opcodes", function() {
     });
 
     it("sets H flag when last 4-bits overflow 0xF", function() {
-      mockMMU.expects('read8').returns(0x7F);
+      read8Stub.returns(0x7F);
       cpu.sp = 0x2FF1;
       ops[0xF8]();
       expect(cpu.register.F).to.equal(0x20);
     });
 
     it("sets C flag when overflow 0x0000", function() {
-      mockMMU.expects('read8').returns(0xF0);
+      read8Stub.returns(0xF0);
       cpu.sp = 0x0001;
       ops[0xF8]();
       expect(cpu.register.H).to.equal(0xFF);
@@ -552,7 +531,7 @@ describe("Load opcodes", function() {
     });
 
     it("sets H flag when last 4-bits overflow 0x0", function() {
-      mockMMU.expects('read8').returns(0xFD);
+      read8Stub.returns(0xFD);
       cpu.sp = 0x0011;
       ops[0xF8]();
       expect(cpu.register.F).to.equal(0x20);
@@ -565,11 +544,10 @@ describe("Load opcodes", function() {
 
   describe("LD (nn),SP", function() {
     it("loads stack pointer into address at 16-bit immediate value nn", function() {
-      mockMMU.expects('read16').once().withArgs(0x201).returns(0x7348);
-      mockMMU.expects('write16').once().withArgs(0x7348, 0x4321);
+      read16Stub.withArgs(0x201).returns(0x7348);
       cpu.sp = 0x4321;
       ops[0x08]();
-      mockMMU.verify();
+      expect(write16Spy.calledWith(0x7348, 0x4321)).to.be.true;
       expect(cpu.pc).to.equal(0x202);
     });
 
@@ -589,13 +567,12 @@ describe("Load opcodes", function() {
 
     describe("PUSH " + i.src, function() {
       it("Pushes " + i.src + " onto stack. Stack pointer is decremented twice.", function() {
-        mockMMU.expects('write8').once().withArgs(0xFFFD, 0x5F);
-        mockMMU.expects('write8').once().withArgs(0xFFFC, 0x80);
         cpu.sp = 0xFFFE;
         cpu.register[rh] = 0x5F;
         cpu.register[rl] = 0x80;
         ops[i.op]();
-        mockMMU.verify();
+        expect(write8Spy.calledWith(0xFFFD, 0x5F)).to.be.true;
+        expect(write8Spy.calledWith(0xFFFC, 0x80)).to.be.true;
         expect(cpu.sp).to.equal(0xFFFC);
       });
 
@@ -616,11 +593,10 @@ describe("Load opcodes", function() {
 
     describe("POP " + i.dest, function() {
       it("Pop two bytes off stack into register pair " + i.dest + ". Stack pointer is incremented twice.", function() {
-        mockMMU.expects('read8').once().withArgs(0xFFF1).returns(0xAB);
-        mockMMU.expects('read8').once().withArgs(0xFFF2).returns(0xC2);
+        read8Stub.withArgs(0xFFF1).returns(0xAB);
+        read8Stub.withArgs(0xFFF2).returns(0xC2);
         cpu.sp = 0xFFF0;
         ops[i.op]();
-        mockMMU.verify();
         expect(cpu.sp).to.equal(0xFFF2);
         expect(cpu.register[rh]).to.equal(0xAB);
         expect(cpu.register[rl]).to.equal(0xC2);
