@@ -10,7 +10,7 @@ function Gameboy() {
   this.cpu = new CPU(this.mmu);
 }
 
-Gameboy.prototype.emulate = function() {
+Gameboy.prototype.emulate = function(renderFn) {
   var tClocks = this.cpu.execute();
-  // this.gpu.execute(tClocks);
+  this.gpu.execute(tClocks, renderFn);
 };
