@@ -148,32 +148,41 @@ describe("GPU", function() {
     });
 
     describe("mode 1", function() {
+      var renderFn;
       beforeEach(function() {
         gpu.setMode(1);
         gpu.ly = 144;
         gpu.clock = 453;
+        renderFn = sinon.spy();
       });
 
       it("resets clock at 456 ticks", function() {
-        gpu.execute(4);
+        gpu.execute(4, renderFn);
         expect(gpu.clock).to.equal(0);
       });
 
       it("increments line number at 456 ticks", function() {
-        gpu.execute(4);
+        gpu.execute(4, renderFn);
         expect(gpu.ly).to.equal(145);
       });
 
-      it("switches to mode 2 at 456 ticks after 10 lines", function() {
-        gpu.ly = 153;
-        gpu.execute(4);
-        expect(gpu.getMode()).to.equal(2);
-      });
+      describe("after 10 lines", function() {
+        beforeEach(function() {
+          gpu.ly = 153;
+          gpu.execute(4, renderFn);
+        });
 
-      it("resets line count at 456 ticks after 10 lines", function() {
-        gpu.ly = 153;
-        gpu.execute(4);
-        expect(gpu.ly).to.equal(0);
+        it("switches to mode 2 at 456 ticks after 10 lines", function() {
+          expect(gpu.getMode()).to.equal(2);
+        });
+
+        it("resets line count at 456 ticks after 10 lines", function() {
+          expect(gpu.ly).to.equal(0);
+        });
+
+        it("calls render function", function() {
+          expect(renderFn.called).to.be.true;
+        });
       });
     });
 
