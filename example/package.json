@@ -1,0 +1,15 @@
+{
+  "name": "gbn-example",
+  "version": "1.0.0",
+  "description": "Example implementation",
+  "main": "index.js",
+  "scripts": {
+    "start": "./node_modules/.bin/beefy index.js --open"
+  },
+  "author": "Jeff Smith",
+  "license": "MIT",
+  "dependencies": {
+    "beefy": "^2.1.5",
+    "watchify": "^3.3.1"
+  }
+}

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha test/**",
-    "testw": "./node_modules/.bin/mocha test/** --watch --reporter dot"
+    "testw": "./node_modules/.bin/mocha test/** --watch --reporter dot",
+    "example": "cd example && npm start"
   },
   "repository": {
     "type": "git",
