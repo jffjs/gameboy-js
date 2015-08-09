@@ -162,7 +162,7 @@ describe("Jump opcodes", function() {
       cpu.resetFlag('Z');
       read8Stub.withArgs(0x201).returns(0x0A);
       ops[0x20]();
-      expect(cpu.pc).to.equal(0x20A);
+      expect(cpu.pc).to.equal(0x20B);
       expect(cpu.incrementPC).to.be.false;
     });
 
@@ -170,7 +170,7 @@ describe("Jump opcodes", function() {
       cpu.resetFlag('Z');
       read8Stub.withArgs(0x201).returns(0xFE);
       ops[0x20]();
-      expect(cpu.pc).to.equal(0x1FE);
+      expect(cpu.pc).to.equal(0x1FF);
       expect(cpu.incrementPC).to.be.false;
     });
 
@@ -192,7 +192,7 @@ describe("Jump opcodes", function() {
       cpu.setFlag('Z');
       read8Stub.withArgs(0x201).returns(0x0A);
       ops[0x28]();
-      expect(cpu.pc).to.equal(0x20A);
+      expect(cpu.pc).to.equal(0x20B);
       expect(cpu.incrementPC).to.be.false;
     });
 
@@ -200,7 +200,7 @@ describe("Jump opcodes", function() {
       cpu.setFlag('Z');
       read8Stub.withArgs(0x201).returns(0xFE);
       ops[0x28]();
-      expect(cpu.pc).to.equal(0x1FE);
+      expect(cpu.pc).to.equal(0x1FF);
       expect(cpu.incrementPC).to.be.false;
     });
 
@@ -222,7 +222,7 @@ describe("Jump opcodes", function() {
       cpu.resetFlag('C');
       read8Stub.withArgs(0x201).returns(0x0A);
       ops[0x30]();
-      expect(cpu.pc).to.equal(0x20A);
+      expect(cpu.pc).to.equal(0x20B);
       expect(cpu.incrementPC).to.be.false;
     });
 
@@ -230,7 +230,7 @@ describe("Jump opcodes", function() {
       cpu.resetFlag('C');
       read8Stub.withArgs(0x201).returns(0xFE);
       ops[0x30]();
-      expect(cpu.pc).to.equal(0x1FE);
+      expect(cpu.pc).to.equal(0x1FF);
       expect(cpu.incrementPC).to.be.false;
     });
 
@@ -252,7 +252,7 @@ describe("Jump opcodes", function() {
       cpu.setFlag('C');
       read8Stub.withArgs(0x201).returns(0x0A);
       ops[0x38]();
-      expect(cpu.pc).to.equal(0x20A);
+      expect(cpu.pc).to.equal(0x20B);
       expect(cpu.incrementPC).to.be.false;
     });
 
@@ -260,7 +260,7 @@ describe("Jump opcodes", function() {
       cpu.setFlag('C');
       read8Stub.withArgs(0x201).returns(0xFE);
       ops[0x38]();
-      expect(cpu.pc).to.equal(0x1FE);
+      expect(cpu.pc).to.equal(0x1FF);
       expect(cpu.incrementPC).to.be.false;
     });
 

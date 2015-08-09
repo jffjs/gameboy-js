@@ -14,3 +14,7 @@ Gameboy.prototype.emulate = function(renderFn) {
   var tClocks = this.cpu.execute();
   this.gpu.execute(tClocks, renderFn);
 };
+
+Gameboy.prototype.load = function(rom) {
+  this.mmu.load(rom);
+};
