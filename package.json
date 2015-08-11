@@ -6,7 +6,7 @@
   "scripts": {
     "test": "./node_modules/.bin/mocha test/**",
     "testw": "./node_modules/.bin/mocha test/** --watch --reporter dot",
-    "example": "cd example && npm start"
+    "example": "cd example && if [ ! -d node_modules ]; then npm install; fi && npm start"
   },
   "repository": {
     "type": "git",
