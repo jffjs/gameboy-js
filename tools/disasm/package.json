@@ -1,0 +1,11 @@
+{
+  "name": "disasm",
+  "version": "1.0.0",
+  "description": "Gameboy Z80 disassembler",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jeff Smith",
+  "license": "MIT"
+}
